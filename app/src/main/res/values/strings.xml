@@ -79,6 +79,11 @@
     <string name="tile_nessuno">Nothing planned</string>
     <string name="tile_vuoto">Nothing planned.\nNew reminders will show up here.</string>
     <string name="apri_app">Open the app</string>
+    <string name="riquadro_link">Add the Quick Settings tile ›</string>
+    <string name="riquadro_titolo">Your reminders in Quick Settings</string>
+    <string name="riquadro_come">The “Upcoming reminders” tile shows your next reminders with one tap, without opening the app.\n\nTo add it: swipe down twice from the top to open Quick Settings, tap the pencil (or the ⋮ menu → Edit) and drag “Upcoming reminders” among the buttons.</string>
+    <string name="riquadro_aggiunto">You\'ll find it at the bottom of Quick Settings</string>
+    <string name="riquadro_gia">The tile is already in Quick Settings</string>
 
     <!-- The "new / edit" sheet -->
     <string name="personale_titolo">New reminder</string>

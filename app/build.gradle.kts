@@ -25,8 +25,8 @@ android {
         applicationId = "com.ac.reminder"
         minSdk = 26          // Android 8 and up
         targetSdk = 36
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 2
+        versionName = "1.1"
     }
 
     signingConfigs {

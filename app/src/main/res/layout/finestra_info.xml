@@ -36,7 +36,19 @@
             android:textAppearance="@style/Jk.BodyMedium"
             android:textColor="?android:attr/textColorSecondary" />
 
-        <!-- The link row to the licences: light blue like the buttons, 48dp tall for the finger -->
+        <!-- The link rows (tile, licences): light blue like the buttons, 48dp tall for the finger -->
+        <TextView
+            android:id="@+id/linkRiquadro"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:background="?attr/selectableItemBackground"
+            android:gravity="center_vertical"
+            android:minHeight="48dp"
+            android:text="@string/riquadro_link"
+            android:textAppearance="@style/Jk.BodyMedium"
+            android:textColor="?attr/colorPrimary" />
+
         <TextView
             android:id="@+id/linkLicenze"
             android:layout_width="wrap_content"

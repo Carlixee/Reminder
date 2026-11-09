@@ -1,14 +1,17 @@
 package com.ac.reminder
 
 import android.Manifest
+import android.app.StatusBarManager
 import android.content.ActivityNotFoundException
 import android.content.BroadcastReceiver
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.content.res.ColorStateList
 import android.graphics.Color
+import android.graphics.drawable.Icon
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -25,6 +28,7 @@ import androidx.activity.OnBackPressedCallback
 import androidx.activity.SystemBarStyle
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.content.IntentCompat
@@ -44,6 +48,7 @@ import com.ac.reminder.dati.Lingua
 import com.ac.reminder.dati.PromemoriaManager
 import com.ac.reminder.notifiche.DiagnosticaNotifiche
 import com.ac.reminder.notifiche.NotificationHelper
+import com.ac.reminder.notifiche.RiquadroPromemoria
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.google.android.material.textfield.MaterialAutoCompleteTextView
@@ -58,10 +63,12 @@ class MainActivity : AppCompatActivity() {
         const val EXTRA_TITOLO = "apri_titolo"
         const val EXTRA_PARTENZA = "apri_partenza"
         const val EXTRA_NUOVO = "apri_nuovo"
-        /** The donations page: the browser opens it, not the app */
         /** Saved once the first-launch note about paused apps has been seen. */
         private const val NOTA_SOSPENSIONE = "nota_sospensione_vista"
+        /** Saved once the first-launch tile proposal has been made. */
+        private const val NOTA_RIQUADRO = "nota_riquadro_vista"
 
+        /** The donations page: the browser opens it, not the app */
         const val LINK_DONAZIONI = "https://paypal.me/Carlixee"
     }
 
@@ -499,18 +506,70 @@ class MainActivity : AppCompatActivity() {
      */
     private fun notaSospensione() {
         val preferenze = getSharedPreferences("preferenze", Context.MODE_PRIVATE)
-        if (preferenze.getBoolean(NOTA_SOSPENSIONE, false)) return
-        if (Build.VERSION.SDK_INT < 30 || packageManager.isAutoRevokeWhitelisted) return
+        if (preferenze.getBoolean(NOTA_SOSPENSIONE, false) ||
+            Build.VERSION.SDK_INT < 30 || packageManager.isAutoRevokeWhitelisted
+        ) {
+            propostaRiquadro()   // no note to show: straight to the next one
+            return
+        }
         fun vista() = preferenze.edit().putBoolean(NOTA_SOSPENSIONE, true).apply()
         MaterialAlertDialogBuilder(this)
             .setTitle(R.string.nota_sospensione_titolo)
             .setMessage(R.string.nota_sospensione_testo)
-            .setNegativeButton(R.string.ho_capito) { _, _ -> vista() }
+            .setNegativeButton(R.string.ho_capito) { _, _ -> vista(); propostaRiquadro() }
             .setPositiveButton(R.string.apri_impostazioni) { _, _ ->
                 vista()
+                riquadroAlRitorno = true   // Android only shows the tile request to an app on screen
                 startActivity(IntentCompat.createManageUnusedAppRestrictionsIntent(this, packageName))
             }
-            .setOnCancelListener { vista() }   // back or a tap outside: seen all the same
+            .setOnCancelListener { vista(); propostaRiquadro() }   // back or a tap outside: seen all the same
+            .show().titoloIntero()
+    }
+
+    /** "Open settings" took the user away: the tile proposal waits until they're back. */
+    private var riquadroAlRitorno = false
+
+    /**
+     * First launch only, after the note above: the "Upcoming reminders" tile, which otherwise
+     * nobody would know about. From Android 13 it's Android's own dialog (one tap and it's added;
+     * nothing appears if it's already there). Before 13 an app can't ask: a note says where to find it.
+     */
+    private fun propostaRiquadro() {
+        val preferenze = getSharedPreferences("preferenze", Context.MODE_PRIVATE)
+        if (preferenze.getBoolean(NOTA_RIQUADRO, false)) return
+        preferenze.edit().putBoolean(NOTA_RIQUADRO, true).apply()
+        if (Build.VERSION.SDK_INT >= 33) chiediRiquadro(silenzioso = true) else spiegaRiquadro()
+    }
+
+    /**
+     * Android 13+: asks Android to add the tile. Android shows its dialog and tells us how it went.
+     * `silenzioso`: at first launch nothing is said if the tile was already there.
+     */
+    @RequiresApi(33)
+    private fun chiediRiquadro(silenzioso: Boolean) {
+        getSystemService(StatusBarManager::class.java).requestAddTileService(
+            ComponentName(this, RiquadroPromemoria::class.java),
+            getString(R.string.tile_titolo),
+            Icon.createWithResource(this, R.drawable.ic_riquadro),
+            mainExecutor
+        ) { esito ->
+            when {
+                esito == StatusBarManager.TILE_ADD_REQUEST_RESULT_TILE_ADDED ->
+                    Toast.makeText(this, R.string.riquadro_aggiunto, Toast.LENGTH_LONG).show()
+                esito == StatusBarManager.TILE_ADD_REQUEST_RESULT_TILE_ALREADY_ADDED && !silenzioso ->
+                    Toast.makeText(this, R.string.riquadro_gia, Toast.LENGTH_SHORT).show()
+                // 1000 and up are errors (Android couldn't ask): the instructions by hand instead
+                esito >= StatusBarManager.TILE_ADD_REQUEST_ERROR_MISMATCHED_PACKAGE -> spiegaRiquadro()
+            }
+        }
+    }
+
+    /** What the tile is and how to add it by hand (before Android 13, or if Android can't ask). */
+    private fun spiegaRiquadro() {
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.riquadro_titolo)
+            .setMessage(R.string.riquadro_come)
+            .setPositiveButton(R.string.ho_capito, null)
             .show().titoloIntero()
     }
 
@@ -527,7 +586,6 @@ class MainActivity : AppCompatActivity() {
         suggerimento = Toast.makeText(this, testo, Toast.LENGTH_SHORT).also { it.show() }
     }
 
-    /** Tap on the green line: explains what's wrong and offers how to fix it. */
     /** The coffee: opens the donations page in the browser. It's the browser that goes
      *  online, not the app: that's why the app doesn't need the internet permission. */
     private fun apriDonazioni() {
@@ -557,6 +615,10 @@ class MainActivity : AppCompatActivity() {
         vista.findViewById<View>(R.id.tastoCaffe).setOnClickListener { finestra.dismiss(); apriDonazioni() }
         vista.findViewById<View>(R.id.tastoChiudi).setOnClickListener { finestra.dismiss() }
         vista.findViewById<View>(R.id.linkLicenze).setOnClickListener { mostraLicenze() }
+        // The tile, any time: Android's dialog from 13 on, the instructions before (opens on top of the "i")
+        vista.findViewById<View>(R.id.linkRiquadro).setOnClickListener {
+            if (Build.VERSION.SDK_INT >= 33) chiediRiquadro(silenzioso = false) else spiegaRiquadro()
+        }
 
         // The drop-down: each language written in its own language, as all apps do.
         // It shows the one the app is speaking now, chosen by hand or taken from the phone.
@@ -591,6 +653,7 @@ class MainActivity : AppCompatActivity() {
             .show()
     }
 
+    /** Tap on the green line: explains what's wrong and offers how to fix it. */
     private fun mostraDettagliSalute() {
         val esito = DiagnosticaNotifiche.controlla(this)
         val finestra = MaterialAlertDialogBuilder(this).setTitle(R.string.salute_titolo)
@@ -649,6 +712,10 @@ class MainActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         aggiornaLista()
+        if (riquadroAlRitorno) {
+            riquadroAlRitorno = false
+            propostaRiquadro()
+        }
         val tic = IntentFilter().apply {
             addAction(Intent.ACTION_TIME_TICK)
             addAction(Intent.ACTION_TIME_CHANGED)

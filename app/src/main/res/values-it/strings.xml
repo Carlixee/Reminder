@@ -78,6 +78,11 @@
     <string name="tile_nessuno">Nessuno in programma</string>
     <string name="tile_vuoto">Niente in programma.\nI promemoria nuovi compariranno qui.</string>
     <string name="apri_app">Apri l\'app</string>
+    <string name="riquadro_link">Aggiungi il riquadro alle impostazioni rapide ›</string>
+    <string name="riquadro_titolo">I promemoria nelle impostazioni rapide</string>
+    <string name="riquadro_come">Il riquadro «Prossimi promemoria» ti mostra i prossimi promemoria con un tocco, senza aprire l\'app.\n\nPer aggiungerlo: scorri due volte dall\'alto per aprire le impostazioni rapide, tocca la matita (o il menu ⋮ → Modifica) e trascina «Prossimi promemoria» tra i pulsanti.</string>
+    <string name="riquadro_aggiunto">Lo trovi in fondo alle impostazioni rapide</string>
+    <string name="riquadro_gia">Il riquadro è già nelle impostazioni rapide</string>
 
     <!-- The "new / edit" sheet -->
     <string name="personale_titolo">Nuovo promemoria</string>
