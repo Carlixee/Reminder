@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The main screen: fixed header at the top, the timeline
+     scrolling below, and "+ New" floating at the bottom right -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/radice"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/sfondo">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <!-- Header: title and status on the left, Search and Past on the right -->
+        <LinearLayout
+            android:id="@+id/testata"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="top"
+            android:orientation="horizontal"
+            android:paddingStart="20dp"
+            android:paddingTop="20dp"
+            android:paddingEnd="20dp"
+            android:paddingBottom="12dp">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/jakarta_extrabold"
+                    android:letterSpacing="-0.02"
+                    android:text="@string/titolo_app"
+                    android:textColor="@color/testo_principale"
+                    android:textSize="30sp" />
+
+                <!-- "Notifications on · 5 upcoming": tap it for the full check -->
+                <TextView
+                    android:id="@+id/statoNotifiche"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:background="?attr/selectableItemBackground"
+                    android:drawableStart="@drawable/punto_salute"
+                    android:drawablePadding="8dp"
+                    android:fontFamily="@font/jakarta_semibold"
+                    android:gravity="center_vertical"
+                    android:paddingTop="4dp"
+                    android:paddingBottom="4dp"
+                    android:textColor="@color/verde"
+                    android:textSize="13sp" />
+            </LinearLayout>
+
+            <ImageButton
+                android:id="@+id/bottoneCerca"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                android:background="@drawable/fondo_tondo"
+                android:contentDescription="@string/cerca"
+                android:padding="12dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_cerca"
+                app:tint="@color/azzurro_chiaro" />
+
+            <!-- Past: the little number at the top right says how many there are. Its text is in dp, not
+                 in sp: it doesn't grow with the phone's font size, otherwise it covers its icon -->
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp">
+
+                <ImageButton
+                    android:id="@+id/bottonePassati"
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
+                    android:background="@drawable/fondo_tondo"
+                    android:contentDescription="@string/mostra_passati"
+                    android:padding="12dp"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/ic_passati"
+                    app:tint="@color/azzurro_chiaro" />
+
+                <TextView
+                    android:id="@+id/numeroPassati"
+                xmlns:tools="http://schemas.android.com/tools"
+                tools:ignore="SpUsage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:minHeight="20dp"
+                    android:layout_gravity="top|end"
+                    android:layout_marginTop="-4dp"
+                    android:layout_marginEnd="-4dp"
+                    android:background="@drawable/fondo_badge"
+                    android:fontFamily="@font/jakarta_extrabold"
+                    android:gravity="center"
+                    android:minWidth="20dp"
+                    android:paddingStart="5dp"
+                    android:paddingEnd="5dp"
+                    android:textColor="@color/blu_profondo"
+                    android:textSize="11dp"
+                    android:visibility="gone" />
+            </FrameLayout>
+        </LinearLayout>
+
+        <!-- The search: appears when the magnifier is tapped -->
+        <EditText
+            android:id="@+id/campoRicerca"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="50dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginBottom="8dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:autofillHints=""
+            android:background="@drawable/fondo_ricerca"
+            android:drawableStart="@drawable/ic_cerca_piccola"
+            android:drawablePadding="10dp"
+            android:drawableTint="@color/testo_tenue"
+            android:fontFamily="@font/jakarta_semibold"
+            android:hint="@string/ricerca_suggerimento"
+            android:imeOptions="actionSearch"
+            android:inputType="text"
+            android:paddingStart="14dp"
+            android:paddingEnd="14dp"
+            android:textColor="@color/testo_principale"
+            android:textSize="15sp"
+            android:visibility="gone" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/lista"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:clipToPadding="false"
+            android:paddingStart="20dp"
+            android:paddingTop="8dp"
+            android:paddingEnd="20dp"
+            android:paddingBottom="110dp" />
+    </LinearLayout>
+
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/bottoneNuovo"
+        style="@style/BottoneNuovo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="20dp"
+        android:text="@string/nuovo"
+        app:icon="@drawable/ic_piu" />
+
+    <!-- At the bottom left, next to "+ New": the coffee and About.
+         58dp tall like "New", so the round buttons are centred at its height -->
+    <LinearLayout
+        android:id="@+id/tastiExtra"
+        android:layout_width="wrap_content"
+        android:layout_height="58dp"
+        android:layout_gravity="bottom|start"
+        android:layout_margin="20dp"
+        android:clipChildren="false"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:id="@+id/bottoneCaffe"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:background="@drawable/fondo_tondo_2"
+            android:contentDescription="@string/caffe"
+            android:elevation="3dp"
+            android:padding="11dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_caffe"
+            app:tint="@color/azzurro_chiaro" />
+
+        <ImageButton
+            android:id="@+id/bottoneInfo"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:layout_marginStart="10dp"
+            android:background="@drawable/fondo_tondo_2"
+            android:contentDescription="@string/informazioni"
+            android:elevation="3dp"
+            android:padding="11dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_info"
+            app:tint="@color/azzurro_chiaro" />
+    </LinearLayout>
+</FrameLayout>

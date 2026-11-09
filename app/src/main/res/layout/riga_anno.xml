@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The change of year in the timeline: "2027" in the dates column,
+     the timeline going on, and a thin line towards the right (like "TODAY").
+     Colours and line are decided by the code (past or future, and whether the line goes on). -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_vertical"
+    android:orientation="horizontal">
+
+    <TextView
+        android:id="@+id/testoAnno"
+        android:layout_width="56dp"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/jakarta_extrabold"
+        android:gravity="start|center_vertical"
+        android:letterSpacing="0.08"
+        android:maxLines="1"
+        android:autoSizeTextType="uniform"
+        android:autoSizeMinTextSize="7sp"
+        android:autoSizeMaxTextSize="12sp"
+        android:autoSizeStepGranularity="0.5sp"
+        android:paddingTop="12dp"
+        android:paddingBottom="12dp"
+        android:textColor="@color/testo_secondario"
+        android:textSize="12sp" />
+
+    <FrameLayout
+        android:layout_width="24dp"
+        android:layout_height="match_parent">
+
+        <View
+            android:id="@+id/lineaAnno"
+            android:layout_width="2dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_horizontal"
+            android:background="@color/linea_futura" />
+    </FrameLayout>
+
+    <View
+        android:id="@+id/rigaAnno"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:layout_weight="1"
+        android:layout_marginStart="10dp"
+        android:background="@color/linea_futura" />
+</LinearLayout>

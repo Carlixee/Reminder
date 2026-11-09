@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- THE ENGLISH TEXTS, also used for every language the app doesn't speak
+         (German, French…). The Italian ones are in values-it/strings.xml:
+         the two lists must have the same names. -->
+    <string name="codice_lingua">en</string>
+    <string name="app_name">Reminder</string>
+    <string name="titolo_app">Reminders</string>
+    <string name="nuovo">New</string>
+    <string name="cerca">Search</string>
+    <string name="mostra_passati">Past reminders</string>
+    <string name="ricerca_suggerimento">Search: title, day…</string>
+    <string name="nessun_passato">No past reminders</string>
+    <string name="nessun_risultato">No reminders found</string>
+
+    <!-- The green line under the title -->
+    <string name="salute_ok">Notifications on</string>
+    <string name="salute_ko">Notifications at risk · tap here</string>
+    <plurals name="stato_in_arrivo">
+        <item quantity="one">%d upcoming</item>
+        <item quantity="other">%d upcoming</item>
+    </plurals>
+    <string name="stato_niente">nothing upcoming</string>
+    <string name="salute_titolo">Notification check</string>
+    <string name="salute_ok_messaggio">All good: permissions, high-priority channel and no battery optimization.\n\nYour reminders will arrive on time.</string>
+    <string name="salute_ko_messaggio">Your reminders might not arrive:\n\n%1$s</string>
+    <string name="salute_fix_notifiche">Notification settings</string>
+    <string name="salute_fix_batteria">Battery settings</string>
+    <string name="chiudi">Close</string>
+    <string name="salute_p_notifiche">• Notifications for the app are turned off</string>
+    <string name="salute_p_canale_spento">• The “Reminders” channel is turned off</string>
+    <string name="salute_p_canale_basso">• The channel is no longer high priority: no pop-ups</string>
+    <string name="salute_p_batteria">• The app is not excluded from battery optimization</string>
+    <string name="salute_p_sveglie">• Exact alarms are turned off: alerts may arrive up to an hour late</string>
+    <string name="salute_fix_sveglie">Exact alarms</string>
+    <string name="salute_p_non_disturbare">• Do Not Disturb is on and Reminder isn\'t among the allowed apps: reminders arrive without sound. On the page that opens, add Reminder to the allowed apps.</string>
+    <string name="salute_fix_non_disturbare">Do Not Disturb</string>
+    <string name="salute_ko_non_disturbare">Do Not Disturb: no sound · tap here</string>
+    <string name="suggerimento_modifica">Press and hold to edit</string>
+    <string name="suggerimento_elimina">Press and hold to delete</string>
+    <string name="nota_sospensione_titolo">So you never miss a reminder</string>
+    <string name="nota_sospensione_testo">If you don\'t open Reminder for a few months, Android may pause it and delete its alarms. To prevent this, turn off the option for unused apps on the page that opens.</string>
+    <string name="ho_capito">Got it</string>
+    <string name="apri_impostazioni">Open settings</string>
+    <string name="permesso_negato">Without this permission you won\'t see any notifications!</string>
+    <string name="canale_nome">Reminders</string>
+    <string name="canale_descrizione">Reminder alerts</string>
+
+    <!-- The list -->
+    <string name="prossimo_etichetta">NEXT REMINDER</string>
+    <string name="vuoto_titolo">Nothing planned</string>
+    <string name="vuoto_testo">Tap “New” to create a reminder</string>
+    <string name="oggi_marcatore">TODAY · %s</string>
+    <string name="passati_etichetta">PAST</string>
+    <string name="passati_elimina">Delete all</string>
+    <string name="passati_elimina_titolo">Delete past reminders?</string>
+    <string name="passati_elimina_messaggio">The %d reminders that have already passed will be deleted.</string>
+    <string name="avvisi_riga">Alerts: %s</string>
+    <string name="avvisi_spenti">Alerts off</string>
+    <string name="avvisi_nessuno_riga">No alerts</string>
+    <string name="avvisi_finiti">No more alerts</string>
+    <string name="adesso">now</string>
+    <string name="domani">tomorrow</string>
+    <plurals name="tra_minuti">
+        <item quantity="one">in %d minute</item>
+        <item quantity="other">in %d minutes</item>
+    </plurals>
+    <plurals name="tra_ore">
+        <item quantity="one">in %d hour</item>
+        <item quantity="other">in %d hours</item>
+    </plurals>
+    <plurals name="tra_giorni">
+        <item quantity="one">in %d day</item>
+        <item quantity="other">in %d days</item>
+    </plurals>
+
+    <!-- The tile in quick settings -->
+    <string name="tile_titolo">Upcoming reminders</string>
+    <string name="tile_nessuno">Nothing planned</string>
+    <string name="tile_vuoto">Nothing planned.\nNew reminders will show up here.</string>
+    <string name="apri_app">Open the app</string>
+
+    <!-- The "new / edit" sheet -->
+    <string name="personale_titolo">New reminder</string>
+    <string name="personale_modifica">Edit reminder</string>
+    <string name="etichetta_titolo">TITLE</string>
+    <string name="personale_suggerimento">E.g. Hairdresser, check-up, gym…</string>
+    <string name="personale_serve_nome">A title is needed</string>
+    <string name="etichetta_quando">WHEN</string>
+    <string name="etichetta_a_partire_da">STARTING FROM</string>
+    <string name="etichetta_ora">TIME</string>
+    <string name="etichetta_ripeti">REPEATS</string>
+    <string name="ripeti_no">No</string>
+    <string name="ripeti_giorni">Days</string>
+    <string name="ripeti_settimane">Weeks</string>
+    <string name="ripeti_mesi">Months</string>
+    <string name="ripeti_ogni">Every</string>
+    <string name="meno">Less</string>
+    <string name="piu">More</string>
+    <string name="g_lun">Mon</string>
+    <string name="g_mar">Tue</string>
+    <string name="g_mer">Wed</string>
+    <string name="g_gio">Thu</string>
+    <string name="g_ven">Fri</string>
+    <string name="g_sab">Sat</string>
+    <string name="g_dom">Sun</string>
+    <plurals name="unita_giorni">
+        <item quantity="one">day</item>
+        <item quantity="other">days</item>
+    </plurals>
+    <plurals name="unita_settimane">
+        <item quantity="one">week</item>
+        <item quantity="other">weeks</item>
+    </plurals>
+    <plurals name="unita_mesi">
+        <item quantity="one">month</item>
+        <item quantity="other">months</item>
+    </plurals>
+    <string name="mesi_il_giorno">On day</string>
+    <string name="mesi_il">On the</string>
+    <string name="giorno_titolo">Which day of the month?</string>
+    <string name="nota_mesi_corti">In shorter months: the last day of the month.</string>
+    <string name="prossima_volta">Next time: %s</string>
+    <string name="giorno_e_ora">%1$s at %2$s</string>
+    <string name="etichetta_avvisi">ALERTS</string>
+    <string name="avvisi_aggiungi">Add</string>
+    <string name="avvisi_nessuno">No alerts: this reminder won\'t ring.</string>
+    <string name="avvisi_passati">The alerts for this time have already passed: it will ring at %1$s.</string>
+    <string name="avvisi_accesi">Alerts on</string>
+    <string name="avvisi_accesi_spiega">Off: it stays in the list, but won\'t ring</string>
+    <string name="salvato_passato">It\'s already in the past: you\'ll find it among the past ones</string>
+
+    <!-- Favorites and the custom choice, in the sheet -->
+    <string name="avviso_anteprima">It will ring: %s</string>
+    <string name="avviso_doppio">This alert is already there</string>
+    <string name="preferiti_oppure">Or…</string>
+    <string name="preferiti_scegli">Add an alert…</string>
+    <string name="preferiti_aggiungi">Add to favorites</string>
+    <string name="preferiti_gia">In favorites</string>
+    <string name="preferiti_togli_titolo">Remove “%s” from favorites?</string>
+    <string name="preferiti_togli">Remove</string>
+    <string name="preferiti_massimo">Up to %d favorites: press and hold one to remove it</string>
+
+    <!-- The two round buttons at the bottom left -->
+    <string name="caffe">Say thanks with a coffee</string>
+    <string name="informazioni">About</string>
+    <string name="lingua_titolo">Language</string>
+    <!-- Each language is written in its own language: these are never translated -->
+    <string name="lingua_it" translatable="false">Italiano</string>
+    <string name="lingua_en" translatable="false">English</string>
+    <string name="info_messaggio">Version %1$s, made by Carlixee\n\nNo ads and 100%% privacy. Your data will never leave your device.\n\nTHANKS TO\n• Plus Jakarta Sans, the typeface of the texts. Copyright 2020 The Plus Jakarta Sans Project Authors, SIL Open Font License 1.1\n• AndroidX, Material Components and Material icons by Google, Apache License 2.0\n• Kotlin by JetBrains, Apache License 2.0</string>
+    <string name="licenze_link">Full licenses ›</string>
+    <string name="licenze_titolo">Licenses</string>
+
+    <string name="salva">Save</string>
+    <string name="annulla">Cancel</string>
+    <string name="elimina">Delete</string>
+    <string name="elimina_titolo">Delete this reminder?</string>
+    <string name="elimina_passato_titolo">Do you want to delete this reminder?</string>
+    <string name="fine_per_sempre">Forever</string>
+    <string name="fine_fino_al">Until…</string>
+    <string name="fine_titolo">End date</string>
+    <string name="elimina_ripetuto">It repeats: it will be gone for good, along with all its occurrences.</string>
+</resources>

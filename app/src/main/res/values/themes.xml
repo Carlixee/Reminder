@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!--
+      Theme always dark (parent "Dark", not "DayNight"): the app doesn't follow
+      the phone's setting, it always looks the way we decided.
+      In dark Material 3 the "primary" colour is the LIGHT shade and "onPrimary"
+      the dark one: that's why the buttons come out pale blue with blue text.
+    -->
+    <style name="Theme.Reminder" parent="Theme.Material3.Dark.NoActionBar">
+        <item name="colorPrimary">@color/azzurro_chiaro</item>
+        <item name="colorOnPrimary">@color/blu_profondo</item>
+        <item name="colorPrimaryContainer">@color/blu_profondo</item>
+        <item name="colorOnPrimaryContainer">@color/azzurro_chiaro</item>
+        <item name="colorSecondary">@color/azzurro_chiaro</item>
+        <item name="colorOnSecondary">@color/blu_profondo</item>
+        <item name="colorSecondaryContainer">@color/blu_profondo</item>
+        <item name="colorOnSecondaryContainer">@color/azzurro_chiaro</item>
+        <item name="colorTertiary">@color/azzurro_chiaro</item>
+        <item name="colorOutline">@color/testo_tenue</item>
+        <item name="colorOutlineVariant">@color/linea_futura</item>
+
+        <item name="android:colorBackground">@color/sfondo</item>
+        <item name="android:windowBackground">@color/sfondo</item>
+        <item name="colorSurface">@color/sfondo</item>
+        <item name="colorSurfaceVariant">@color/superficie</item>
+        <item name="colorOnBackground">@color/testo_principale</item>
+        <item name="colorOnSurface">@color/testo_principale</item>
+        <item name="colorOnSurfaceVariant">@color/testo_secondario</item>
+        <!-- The "containers" Material uses for dialogs, menus and date/time pickers:
+             without these lines they would come out grey-purple -->
+        <item name="colorSurfaceContainerLowest">@color/sfondo_profondo</item>
+        <item name="colorSurfaceContainerLow">@color/superficie</item>
+        <item name="colorSurfaceContainer">@color/superficie</item>
+        <item name="colorSurfaceContainerHigh">@color/superficie</item>
+        <item name="colorSurfaceContainerHighest">@color/superficie_2</item>
+        <item name="colorSurfaceBright">@color/superficie_3</item>
+        <item name="colorSurfaceDim">@color/sfondo</item>
+
+        <item name="android:textColorPrimary">@color/testo_principale</item>
+        <item name="android:textColorSecondary">@color/testo_secondario</item>
+        <item name="android:textColorHint">@color/testo_tenue</item>
+
+        <!-- The typeface: Plus Jakarta Sans for every plain text... -->
+        <item name="android:fontFamily">@font/plus_jakarta</item>
+        <item name="fontFamily">@font/plus_jakarta</item>
+        <!-- ...and for the Material components, which each have their own text style -->
+        <item name="textAppearanceDisplayLarge">@style/Jk.DisplayLarge</item>
+        <item name="textAppearanceDisplayMedium">@style/Jk.DisplayMedium</item>
+        <item name="textAppearanceDisplaySmall">@style/Jk.DisplaySmall</item>
+        <item name="textAppearanceHeadlineLarge">@style/Jk.HeadlineLarge</item>
+        <item name="textAppearanceHeadlineMedium">@style/Jk.HeadlineMedium</item>
+        <item name="textAppearanceHeadlineSmall">@style/Jk.HeadlineSmall</item>
+        <item name="textAppearanceTitleLarge">@style/Jk.TitleLarge</item>
+        <item name="textAppearanceTitleMedium">@style/Jk.TitleMedium</item>
+        <item name="textAppearanceTitleSmall">@style/Jk.TitleSmall</item>
+        <item name="textAppearanceBodyLarge">@style/Jk.BodyLarge</item>
+        <item name="textAppearanceBodyMedium">@style/Jk.BodyMedium</item>
+        <item name="textAppearanceBodySmall">@style/Jk.BodySmall</item>
+        <item name="textAppearanceLabelLarge">@style/Jk.LabelLarge</item>
+        <item name="textAppearanceLabelMedium">@style/Jk.LabelMedium</item>
+        <item name="textAppearanceLabelSmall">@style/Jk.LabelSmall</item>
+
+        <!-- The sheet that slides up from the bottom (new / edit) -->
+        <item name="bottomSheetDialogTheme">@style/FoglioDialogo</item>
+        <!-- The calendar to choose the date (see Calendario further down) -->
+        <item name="materialCalendarTheme">@style/Calendario</item>
+        <!-- The clock to choose the time (see Orologio further down) -->
+        <item name="materialTimePickerTheme">@style/Orologio</item>
+    </style>
+
+    <!-- Material texts with our typeface: extra-bold titles, bold labels -->
+    <!-- The clock's big digits (10 : 00). They sit in 96dp wide boxes designed
+         for Android's typeface: Plus Jakarta's zeros are wider, and at 57sp
+         the second "0" came out cut ("OC"). Measured: "00" at 44 takes 64dp, it fits.
+         In dp and not in sp: the box doesn't grow with the phone's font size, so
+         neither do the digits (with large text "OC" came back). Material does the same. -->
+    <style name="Jk.DisplayLarge" parent="TextAppearance.Material3.DisplayLarge"><item name="fontFamily">@font/plus_jakarta</item><item name="android:fontFamily">@font/plus_jakarta</item><item name="android:textSize" tools:ignore="SpUsage">44dp</item></style>
+    <style name="Jk.DisplayMedium" parent="TextAppearance.Material3.DisplayMedium"><item name="fontFamily">@font/plus_jakarta</item><item name="android:fontFamily">@font/plus_jakarta</item></style>
+    <style name="Jk.DisplaySmall" parent="TextAppearance.Material3.DisplaySmall"><item name="fontFamily">@font/plus_jakarta</item><item name="android:fontFamily">@font/plus_jakarta</item></style>
+    <style name="Jk.HeadlineLarge" parent="TextAppearance.Material3.HeadlineLarge"><item name="fontFamily">@font/jakarta_extrabold</item><item name="android:fontFamily">@font/jakarta_extrabold</item></style>
+    <style name="Jk.HeadlineMedium" parent="TextAppearance.Material3.HeadlineMedium"><item name="fontFamily">@font/jakarta_extrabold</item><item name="android:fontFamily">@font/jakarta_extrabold</item></style>
+    <style name="Jk.HeadlineSmall" parent="TextAppearance.Material3.HeadlineSmall"><item name="fontFamily">@font/jakarta_extrabold</item><item name="android:fontFamily">@font/jakarta_extrabold</item></style>
+    <style name="Jk.TitleLarge" parent="TextAppearance.Material3.TitleLarge"><item name="fontFamily">@font/jakarta_bold</item><item name="android:fontFamily">@font/jakarta_bold</item></style>
+    <style name="Jk.TitleMedium" parent="TextAppearance.Material3.TitleMedium"><item name="fontFamily">@font/jakarta_bold</item><item name="android:fontFamily">@font/jakarta_bold</item></style>
+    <style name="Jk.TitleSmall" parent="TextAppearance.Material3.TitleSmall"><item name="fontFamily">@font/jakarta_bold</item><item name="android:fontFamily">@font/jakarta_bold</item></style>
+    <style name="Jk.BodyLarge" parent="TextAppearance.Material3.BodyLarge"><item name="fontFamily">@font/plus_jakarta</item><item name="android:fontFamily">@font/plus_jakarta</item></style>
+    <style name="Jk.BodyMedium" parent="TextAppearance.Material3.BodyMedium"><item name="fontFamily">@font/plus_jakarta</item><item name="android:fontFamily">@font/plus_jakarta</item></style>
+    <style name="Jk.BodySmall" parent="TextAppearance.Material3.BodySmall"><item name="fontFamily">@font/plus_jakarta</item><item name="android:fontFamily">@font/plus_jakarta</item></style>
+    <style name="Jk.LabelLarge" parent="TextAppearance.Material3.LabelLarge"><item name="fontFamily">@font/jakarta_bold</item><item name="android:fontFamily">@font/jakarta_bold</item></style>
+    <style name="Jk.LabelMedium" parent="TextAppearance.Material3.LabelMedium"><item name="fontFamily">@font/jakarta_bold</item><item name="android:fontFamily">@font/jakarta_bold</item></style>
+    <style name="Jk.LabelSmall" parent="TextAppearance.Material3.LabelSmall"><item name="fontFamily">@font/jakarta_bold</item><item name="android:fontFamily">@font/jakarta_bold</item></style>
+
+    <!-- The bottom sheet: same night blue as the cards, rounded top corners.
+         adjustResize = when the keyboard comes up, the sheet rises instead of ending up under it -->
+    <style name="FoglioDialogo" parent="ThemeOverlay.Material3.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/Foglio</item>
+        <item name="android:windowSoftInputMode">adjustResize</item>
+    </style>
+    <style name="Foglio" parent="Widget.Material3.BottomSheet.Modal">
+        <item name="backgroundTint">@color/superficie</item>
+    </style>
+
+    <!-- "+ New" at the bottom right -->
+    <style name="BottoneNuovo" parent="Widget.Material3.ExtendedFloatingActionButton.Icon.Primary">
+        <item name="backgroundTint">@color/azzurro_chiaro</item>
+        <item name="android:textColor">@color/blu_profondo</item>
+        <item name="iconTint">@color/blu_profondo</item>
+        <item name="iconSize">22dp</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:fontFamily">@font/jakarta_extrabold</item>
+        <item name="android:minHeight">58dp</item>
+        <item name="shapeAppearanceOverlay">@style/Angoli20</item>
+    </style>
+    <style name="Angoli20">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">20dp</item>
+    </style>
+
+    <!-- Buttons at the bottom of dialogs: "Save" filled, "Cancel" text only.
+         At least 50dp tall, and more if the phone's text is large (they used to get cut) -->
+    <style name="BottonePieno" parent="Widget.Material3.Button">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:minHeight">50dp</item>
+        <item name="android:paddingStart">28dp</item>
+        <item name="android:paddingEnd">28dp</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:fontFamily">@font/jakarta_extrabold</item>
+        <item name="cornerRadius">16dp</item>
+    </style>
+    <style name="BottoneTesto" parent="Widget.Material3.Button.TextButton">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:minHeight">50dp</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:textColor">@color/azzurro_chiaro</item>
+        <item name="cornerRadius">16dp</item>
+    </style>
+
+    <!-- The small section labels (TITLE, REPEATS, ALERTS) -->
+    <style name="Etichetta">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:fontFamily">@font/jakarta_bold</item>
+        <item name="android:letterSpacing">0.08</item>
+        <item name="android:textColor">@color/testo_secondario</item>
+    </style>
+
+    <!-- One piece of the "segmented" controls (No / Days / Weeks / Months, Mon … Sun).
+         On = light blue background and blue text: the "selected" state decides it -->
+    <style name="Segmento">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">38dp</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:gravity">center</item>
+        <item name="android:background">@drawable/fondo_segmento</item>
+        <item name="android:textColor">@color/testo_segmento</item>
+        <item name="android:textSize">13.5sp</item>
+        <item name="android:fontFamily">@font/jakarta_bold</item>
+        <item name="android:maxLines">1</item>
+        <!-- If the word doesn't fit ("settimane"), the text shrinks by itself -->
+        <item name="android:autoSizeTextType">uniform</item>
+        <item name="android:autoSizeMinTextSize">9sp</item>
+        <item name="android:autoSizeMaxTextSize">13.5sp</item>
+        <item name="android:autoSizeStepGranularity">0.5sp</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+    </style>
+
+    <!-- The tappable "pills" inside the months options: [12], [second], [Thursday] -->
+    <style name="Pillola">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingStart">12dp</item>
+        <item name="android:paddingEnd">12dp</item>
+        <item name="android:paddingTop">5dp</item>
+        <item name="android:paddingBottom">5dp</item>
+        <item name="android:background">@drawable/fondo_pillola</item>
+        <item name="android:textColor">@color/testo_pillola</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:fontFamily">@font/jakarta_extrabold</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+    </style>
+
+    <!-- The round − and + buttons (images, not text: no more empty buttons) -->
+    <style name="BottoneTondo">
+        <item name="android:layout_width">40dp</item>
+        <item name="android:layout_height">40dp</item>
+        <item name="android:background">@drawable/fondo_tondo_2</item>
+        <item name="android:padding">10dp</item>
+        <item name="android:scaleType">fitCenter</item>
+        <item name="tint">@color/azzurro_chiaro</item>
+    </style>
+
+    <!-- The alert pills: "30 minutes before ✕" and "+ Add" -->
+    <style name="ChipAvviso" parent="Widget.Material3.Chip.Input">
+        <item name="chipBackgroundColor">@color/superficie_2</item>
+        <item name="chipStrokeWidth">0dp</item>
+        <item name="chipCornerRadius">12dp</item>
+        <item name="chipIconVisible">false</item>
+        <item name="closeIconVisible">true</item>
+        <item name="closeIconTint">@color/testo_secondario</item>
+        <item name="android:checkable">false</item>
+        <item name="android:textColor">@color/testo_principale</item>
+    </style>
+    <style name="ChipAggiungi" parent="Widget.Material3.Chip.Assist">
+        <item name="chipBackgroundColor">@android:color/transparent</item>
+        <item name="chipStrokeColor">@color/azzurro_chiaro</item>
+        <item name="chipStrokeWidth">1.5dp</item>
+        <item name="chipCornerRadius">12dp</item>
+        <item name="chipIcon">@drawable/ic_piu</item>
+        <item name="chipIconTint">@color/azzurro_chiaro</item>
+        <item name="chipIconSize">16dp</item>
+        <item name="android:textColor">@color/azzurro_chiaro</item>
+    </style>
+
+    <!-- The calendar: the day numbers sit in fixed size boxes, and with the phone's
+         large text "20" and "30" became "2" and "3" (Plus Jakarta's zero is wide).
+         Here they stay at the normal size, in dp: they don't grow with the font size. -->
+    <style name="Calendario" parent="ThemeOverlay.Material3.MaterialCalendar">
+        <item name="textAppearanceBodyLarge">@style/Jk.BodyLarge.Fisso</item>
+    </style>
+    <style name="Jk.BodyLarge.Fisso"><item name="android:textSize" tools:ignore="SpUsage">16dp</item></style>
+
+    <!-- The clock: the big digits "10 : 00" sit in 96dp wide boxes. Material makes them
+         56dp and Plus Jakarta's zeros, wider, didn't fit ("OC"). The old
+         fix (Jk.DisplayLarge) was overridden: the size must be set here, on the style
+         of the boxes. "00" at 44dp takes 64dp: it fits, even with large text. -->
+    <style name="Orologio" parent="ThemeOverlay.Material3.MaterialTimePicker">
+        <item name="chipStyle">@style/Orologio.Cifre</item>
+    </style>
+    <style name="Orologio.Cifre" parent="Widget.Material3.MaterialTimePicker.Display">
+        <item name="android:textSize" tools:ignore="SpUsage">44dp</item>
+    </style>
+</resources>

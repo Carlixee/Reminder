@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The custom choice, which opens in the sheet when "Or…" is tapped:
+     unit → quick buttons → [−] 15 minutes before [+] → preview → star → Add -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/fondo_casella"
+    android:orientation="vertical"
+    android:padding="12dp">
+
+    <!-- minutes | hours | days | weeks -->
+    <LinearLayout
+        android:id="@+id/avvisoUnita"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/fondo_segmenti"
+        android:orientation="horizontal"
+        android:padding="4dp">
+
+        <TextView style="@style/Segmento" />
+        <TextView style="@style/Segmento" android:layout_marginStart="4dp" />
+        <TextView style="@style/Segmento" android:layout_marginStart="4dp" />
+        <TextView style="@style/Segmento" android:layout_marginStart="4dp" />
+    </LinearLayout>
+
+    <!-- The quick buttons of the chosen unit (5 · 10 · 15 · 30 · 45): the code
+         writes the numbers and hides the fifth when four are enough -->
+    <LinearLayout
+        android:id="@+id/avvisoRapidi"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/fondo_segmenti"
+        android:orientation="horizontal"
+        android:padding="4dp">
+
+        <TextView style="@style/Segmento" />
+        <TextView style="@style/Segmento" android:layout_marginStart="4dp" />
+        <TextView style="@style/Segmento" android:layout_marginStart="4dp" />
+        <TextView style="@style/Segmento" android:layout_marginStart="4dp" />
+        <TextView style="@style/Segmento" android:layout_marginStart="4dp" />
+    </LinearLayout>
+
+    <!-- [−] 15 minutes before [+]: for the amounts that aren't among the buttons -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:id="@+id/avvisoMeno"
+            style="@style/BottoneTondo"
+            android:contentDescription="@string/meno"
+            android:src="@drawable/ic_meno" />
+
+        <TextView
+            android:id="@+id/avvisoQuanto"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:fontFamily="@font/jakarta_extrabold"
+            android:gravity="center"
+            android:textColor="@color/testo_principale"
+            android:textSize="18sp" />
+
+        <ImageButton
+            android:id="@+id/avvisoPiu"
+            style="@style/BottoneTondo"
+            android:contentDescription="@string/piu"
+            android:src="@drawable/ic_piu" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/avvisoAnteprima"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:gravity="center"
+        android:textColor="@color/testo_secondario"
+        android:textSize="13sp" />
+
+    <!-- The star: empty "Add to favorites", full "In favorites" -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/avvisoStella"
+        style="@style/BottoneTesto"
+        android:layout_width="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="2dp"
+        app:iconSize="18dp"
+        app:iconTint="@color/azzurro_chiaro" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/avvisoAggiungi"
+        style="@style/BottonePieno"
+        android:layout_width="match_parent"
+        android:layout_marginTop="2dp"
+        android:text="@string/avvisi_aggiungi"
+        android:textColor="@color/blu_profondo"
+        app:backgroundTint="@color/azzurro_chiaro"
+        app:icon="@drawable/ic_piu"
+        app:iconGravity="textStart"
+        app:iconSize="18dp"
+        app:iconTint="@color/blu_profondo" />
+</LinearLayout>

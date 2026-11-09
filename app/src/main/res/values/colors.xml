@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- "Night blue" palette: two shades for the controls -->
+    <color name="azzurro_chiaro">#BBDEFB</color>
+    <color name="blu_profondo">#0D47A1</color>
+    <color name="blu_casella">#1A5BC0</color>
+
+    <!-- Backgrounds, from the darkest to the lightest -->
+    <color name="sfondo_profondo">#0A1017</color>
+    <color name="sfondo">#0F1720</color>
+    <color name="superficie">#16202B</color>
+    <color name="superficie_2">#1D2A38</color>
+    <color name="superficie_3">#233242</color>
+
+    <!-- The timeline: darker in the past, lighter in the future -->
+    <color name="linea_passata">#263544</color>
+    <color name="linea_futura">#33475B</color>
+    <color name="bordo_passato">#22303F</color>
+    <color name="punto_passato">#4A6178</color>
+
+    <!-- Texts -->
+    <color name="bianco">#FFFFFF</color>
+    <color name="testo_principale">#E3ECF5</color>
+    <color name="testo_secondario">#9DB4CC</color>
+    <color name="testo_tenue">#7FA0BD</color>
+
+    <!-- Notification status, and the red of "Delete" (actions with no way back) -->
+    <color name="verde">#A5D6A7</color>
+    <color name="arancio">#FFCC80</color>
+    <color name="rosso">#FF8A80</color>
+
+    <color name="icon_bg">#0D47A1</color>
+</resources>

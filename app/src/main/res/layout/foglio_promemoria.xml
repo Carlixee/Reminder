@@ -1,0 +1,554 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The "New / Edit reminder" sheet that slides up from the bottom.
+     Everything inside a scroll: if it doesn't fit, it scrolls. -->
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingStart="20dp"
+        android:paddingTop="10dp"
+        android:paddingEnd="20dp"
+        android:paddingBottom="20dp">
+
+        <!-- The "handle": says that the sheet can be pulled down -->
+        <View
+            android:layout_width="36dp"
+            android:layout_height="4dp"
+            android:layout_gravity="center_horizontal"
+            android:background="@drawable/maniglia" />
+
+        <TextView
+            android:id="@+id/titoloFoglio"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:fontFamily="@font/jakarta_extrabold"
+            android:textColor="@color/testo_principale"
+            android:textSize="21sp" />
+
+        <!-- TITLE -->
+        <TextView
+            style="@style/Etichetta"
+            android:layout_marginTop="16dp"
+            android:text="@string/etichetta_titolo" />
+
+        <EditText
+            android:id="@+id/campoTitolo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="50dp"
+            android:layout_marginTop="6dp"
+            android:autofillHints=""
+            android:background="@drawable/fondo_campo"
+            android:gravity="center_vertical"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:fontFamily="@font/jakarta_semibold"
+            android:hint="@string/personale_suggerimento"
+            android:imeOptions="actionDone"
+            android:inputType="textCapSentences"
+            android:maxLines="1"
+            android:paddingStart="14dp"
+            android:paddingEnd="14dp"
+            android:textColor="@color/testo_principale"
+            android:textSize="16sp" />
+
+        <!-- Date and time: two boxes side by side (with large text, one under the other) -->
+        <LinearLayout
+            android:id="@+id/rigaDataOra"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:id="@+id/bottoneData"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/fondo_casella"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="12dp">
+
+                <ImageView
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
+                    android:importantForAccessibility="no"
+                    android:src="@drawable/ic_calendario"
+                    app:tint="@color/azzurro_chiaro" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/etichettaData"
+                        style="@style/Etichetta"
+                        android:letterSpacing="0.06"
+                        android:textSize="11sp" />
+
+                    <TextView
+                        android:id="@+id/testoData"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:fontFamily="@font/jakarta_bold"
+                        android:textColor="@color/testo_principale"
+                        android:textSize="15sp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/bottoneOra"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_weight="1"
+                android:background="@drawable/fondo_casella"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="12dp">
+
+                <ImageView
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
+                    android:importantForAccessibility="no"
+                    android:src="@drawable/ic_orologio"
+                    app:tint="@color/azzurro_chiaro" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        style="@style/Etichetta"
+                        android:letterSpacing="0.06"
+                        android:text="@string/etichetta_ora"
+                        android:textSize="11sp" />
+
+                    <TextView
+                        android:id="@+id/testoOra"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:fontFamily="@font/jakarta_bold"
+                        android:textColor="@color/testo_principale"
+                        android:textSize="15sp" />
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- REPEATS: No / Days / Weeks / Months -->
+        <TextView
+            style="@style/Etichetta"
+            android:layout_marginTop="16dp"
+            android:text="@string/etichetta_ripeti" />
+
+        <LinearLayout
+            android:id="@+id/gruppoRipeti"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/fondo_segmenti"
+            android:orientation="horizontal"
+            android:padding="4dp">
+
+            <TextView android:id="@+id/ripetiNo" style="@style/Segmento" android:text="@string/ripeti_no" />
+            <TextView android:id="@+id/ripetiGiorni" style="@style/Segmento" android:layout_marginStart="4dp" android:text="@string/ripeti_giorni" />
+            <TextView android:id="@+id/ripetiSettimane" style="@style/Segmento" android:layout_marginStart="4dp" android:text="@string/ripeti_settimane" />
+            <TextView android:id="@+id/ripetiMesi" style="@style/Segmento" android:layout_marginStart="4dp" android:text="@string/ripeti_mesi" />
+        </LinearLayout>
+
+        <!-- Every [−] 2 [+] weeks. With large text "weeks" goes below -->
+        <LinearLayout
+            android:id="@+id/rigaOgni"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/jakarta_semibold"
+                android:text="@string/ripeti_ogni"
+                android:textColor="@color/testo_principale"
+                android:textSize="15sp" />
+
+            <ImageButton
+                android:id="@+id/bottoneMeno"
+                style="@style/BottoneTondo"
+                android:layout_marginStart="12dp"
+                android:contentDescription="@string/meno"
+                android:src="@drawable/ic_meno" />
+
+            <TextView
+                android:id="@+id/testoOgni"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/jakarta_extrabold"
+                android:gravity="center"
+                android:minWidth="36dp"
+                android:textColor="@color/testo_principale"
+                android:textSize="20sp" />
+
+            <ImageButton
+                android:id="@+id/bottonePiu"
+                style="@style/BottoneTondo"
+                android:contentDescription="@string/piu"
+                android:src="@drawable/ic_piu" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/testoUnita"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:fontFamily="@font/jakarta_semibold"
+                android:textColor="@color/testo_principale"
+                android:textSize="15sp" />
+        </LinearLayout>
+
+        <!-- Weeks: on which days (more than one can be switched on) -->
+        <LinearLayout
+            android:id="@+id/gruppoGiorni"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/fondo_segmenti"
+            android:orientation="horizontal"
+            android:padding="4dp">
+
+            <TextView style="@style/Segmento" android:text="@string/g_lun" />
+            <TextView style="@style/Segmento" android:layout_marginStart="3dp" android:text="@string/g_mar" />
+            <TextView style="@style/Segmento" android:layout_marginStart="3dp" android:text="@string/g_mer" />
+            <TextView style="@style/Segmento" android:layout_marginStart="3dp" android:text="@string/g_gio" />
+            <TextView style="@style/Segmento" android:layout_marginStart="3dp" android:text="@string/g_ven" />
+            <TextView style="@style/Segmento" android:layout_marginStart="3dp" android:text="@string/g_sab" />
+            <TextView style="@style/Segmento" android:layout_marginStart="3dp" android:text="@string/g_dom" />
+        </LinearLayout>
+
+        <!-- Months: "On day [12]" or "On the [second] [Thursday]" -->
+        <LinearLayout
+            android:id="@+id/opzioniMesi"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:id="@+id/sceltaGiorno"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/fondo_opzione"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center_vertical"
+                android:minHeight="52dp"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                android:orientation="horizontal"
+                android:paddingStart="14dp"
+                android:paddingEnd="14dp">
+
+                <View
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:background="@drawable/radio_opzione" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:fontFamily="@font/jakarta_semibold"
+                    android:text="@string/mesi_il_giorno"
+                    android:textColor="@color/testo_principale"
+                    android:textSize="15sp" />
+
+                <TextView
+                    android:id="@+id/pillolaGiorno"
+                    style="@style/Pillola"
+                    android:layout_marginStart="8dp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/sceltaSettimana"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/fondo_opzione"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center_vertical"
+                android:minHeight="52dp"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                android:orientation="horizontal"
+                android:paddingStart="14dp"
+                android:paddingEnd="14dp">
+
+                <View
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:background="@drawable/radio_opzione" />
+
+                <!-- "On the [second]" [Thursday]. With large text the day goes below -->
+                <LinearLayout
+                    android:id="@+id/rigaIlSettimana"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/jakarta_semibold"
+                            android:text="@string/mesi_il"
+                            android:textColor="@color/testo_principale"
+                            android:textSize="15sp" />
+
+                        <TextView
+                            android:id="@+id/pillolaOrdinale"
+                            style="@style/Pillola"
+                            android:layout_marginStart="8dp" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/pillolaGiornoSettimana"
+                        style="@style/Pillola"
+                        android:layout_marginStart="6dp" />
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- Forever | Until 30 Nov -->
+        <LinearLayout
+            android:id="@+id/gruppoFine"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/fondo_segmenti"
+            android:orientation="horizontal"
+            android:padding="4dp">
+
+            <TextView android:id="@+id/finePerSempre" style="@style/Segmento" android:text="@string/fine_per_sempre" />
+            <TextView android:id="@+id/fineFinoAl" style="@style/Segmento" android:layout_marginStart="4dp" android:text="@string/fine_fino_al" />
+        </LinearLayout>
+
+        <!-- The summary: "Every month, on the second Thursday / Next time: …" -->
+        <LinearLayout
+            android:id="@+id/riquadroRiassunto"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:background="@drawable/fondo_segmenti"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingStart="14dp"
+            android:paddingTop="10dp"
+            android:paddingEnd="14dp"
+            android:paddingBottom="10dp">
+
+            <ImageView
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:importantForAccessibility="no"
+                android:src="@drawable/ic_ripeti"
+                app:tint="@color/azzurro_chiaro" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/testoRiassunto"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/jakarta_semibold"
+                    android:textColor="@color/azzurro_chiaro"
+                    android:textSize="13.5sp" />
+
+                <TextView
+                    android:id="@+id/testoProssima"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:textColor="@color/testo_secondario"
+                    android:textSize="13sp" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- ALERTS: the pills "24 hours before ✕", "30 minutes before ✕", "+ Add" -->
+        <TextView
+            style="@style/Etichetta"
+            android:layout_marginTop="18dp"
+            android:text="@string/etichetta_avvisi" />
+
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/gruppoAvvisi"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            app:chipSpacingHorizontal="8dp"
+            app:chipSpacingVertical="0dp" />
+
+        <TextView
+            android:id="@+id/testoNessunAvviso"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/avvisi_nessuno"
+            android:textColor="@color/arancio"
+            android:textSize="13sp"
+            android:visibility="gone" />
+
+        <!-- The favorites: "+ 10 min", "+ 1 hour"… one tap and the alert is there.
+             Pressing and holding removes one. -->
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/gruppoPreferiti"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:chipSpacingHorizontal="8dp"
+            app:chipSpacingVertical="0dp" />
+
+        <!-- "Or…": opens (and closes) the custom choice below -->
+        <TextView
+            android:id="@+id/testoOppure"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="?attr/selectableItemBackground"
+            android:fontFamily="@font/jakarta_bold"
+            android:paddingTop="10dp"
+            android:paddingEnd="12dp"
+            android:paddingBottom="10dp"
+            android:textColor="@color/azzurro_chiaro"
+            android:textSize="14sp" />
+
+        <include
+            android:id="@+id/pannelloAvviso"
+            layout="@layout/pannello_avviso"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:visibility="gone" />
+
+        <!-- The switch: off = it stays in the list but doesn't ring -->
+        <LinearLayout
+            android:id="@+id/rigaAccesi"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:background="@drawable/fondo_casella"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingStart="14dp"
+            android:paddingTop="8dp"
+            android:paddingEnd="10dp"
+            android:paddingBottom="8dp">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/jakarta_semibold"
+                    android:text="@string/avvisi_accesi"
+                    android:textColor="@color/testo_principale"
+                    android:textSize="15sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/avvisi_accesi_spiega"
+                    android:textColor="@color/testo_secondario"
+                    android:textSize="12.5sp" />
+            </LinearLayout>
+
+            <com.google.android.material.materialswitch.MaterialSwitch
+                android:id="@+id/interruttoreAvvisi"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+        <!-- At the bottom: Delete (only when editing) … Cancel, Save.
+             With large text three don't fit: Delete on top, the other two below on the right -->
+        <LinearLayout
+            android:id="@+id/rigaBottoni"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="22dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/bottoneElimina"
+                style="@style/BottoneTesto"
+                android:layout_width="wrap_content"
+                android:text="@string/elimina"
+                android:textColor="@color/rosso" />
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/bottoneAnnulla"
+                    style="@style/BottoneTesto"
+                    android:layout_width="wrap_content"
+                    android:text="@string/annulla" />
+
+                <Button
+                    android:id="@+id/bottoneSalva"
+                    style="@style/BottonePieno"
+                    android:layout_width="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:text="@string/salva" />
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+</androidx.core.widget.NestedScrollView>

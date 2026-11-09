@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- App icon (chosen on 08/11, "the C with the real shape"): the night coloured "Next"
+     card coming out of the bottom right edge, on the blue background (@color/icon_bg).
+     Inside: light blue label, white title, grey line, pill with the dot.
+
+     How to read it: the drawing is 108x108, but Samsung only shows the central
+     72x72 square (from 18 to 90), cropped with its own shape. The rest is for
+     the effect when you move the icon. That's why the card goes on beyond the edge. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- the night card: only the top left corner is rounded, the rest goes out -->
+    <path
+        android:fillColor="#0F1720"
+        android:pathData="M42.75,28.125 H120 V120 H28.125 V42.75 A14.625,14.625 0 0 1 42.75,28.125 Z" />
+    <!-- label at the top ("NEXT REMINDER") -->
+    <path
+        android:fillColor="#6F9BD1"
+        android:pathData="M39.7125,37.125 h11.7 a1.4625,1.4625 0 0 1 0,2.925 h-11.7 a1.4625,1.4625 0 0 1 0,-2.925 z" />
+    <!-- the title -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M41.625,43.875 h22.5 a3.375,3.375 0 0 1 0,6.75 h-22.5 a3.375,3.375 0 0 1 0,-6.75 z" />
+    <!-- the line with day and time -->
+    <path
+        android:fillColor="#5B7590"
+        android:pathData="M40.05,55.125 h14.4 a1.8,1.8 0 0 1 0,3.6 h-14.4 a1.8,1.8 0 0 1 0,-3.6 z" />
+    <!-- the "how long until" pill -->
+    <path
+        android:fillColor="#BBDEFB"
+        android:pathData="M42.75,65.25 h14.625 a4.5,4.5 0 0 1 0,9 h-14.625 a4.5,4.5 0 0 1 0,-9 z" />
+    <!-- inside the pill: the dot and the text -->
+    <path
+        android:fillColor="#0F1720"
+        android:pathData="M41.0625,69.75 a2.25,2.25 0 1 1 4.5,0 a2.25,2.25 0 1 1 -4.5,0 z" />
+    <path
+        android:fillColor="#0F1720"
+        android:pathData="M48.375,68.625 h7.875 a1.125,1.125 0 0 1 0,2.25 h-7.875 a1.125,1.125 0 0 1 0,-2.25 z" />
+</vector>

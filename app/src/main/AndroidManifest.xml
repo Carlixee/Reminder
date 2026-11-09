@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Permission to SHOW notifications (from Android 13 it must also be asked on screen) -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
+    <!-- EXACT alarms: granted automatically to calendar/alarm apps like this one.
+         It's the piece that fires the notification at the right minute even with the phone in a pocket. -->
+    <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
+
+    <!-- The same for Android 12 (31-32), where USE_EXACT_ALARM doesn't exist yet:
+         there Android grants it by itself at install time. Without it, the app would close. -->
+    <uses-permission
+        android:name="android.permission.SCHEDULE_EXACT_ALARM"
+        android:maxSdkVersion="32" />
+
+    <!-- To turn the screen on when the notification arrives -->
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+
+    <!-- To ask for the exemption from battery optimization (One UI
+         "puts to sleep" rarely used apps and the alarms can be skipped) -->
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
+
+    <!-- To schedule the alarms again after the phone restarts
+         (Android deletes them all when it switches off!) -->
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+
+    <application
+        android:name=".ReminderApp"
+        android:localeConfig="@xml/locales_config"
+        android:label="@string/app_name"
+        android:icon="@mipmap/ic_launcher"
+        android:theme="@style/Theme.Reminder"
+        android:allowBackup="false"
+        android:dataExtractionRules="@xml/regole_backup">
+
+        <!-- singleTask: the app exists only once. If the tile asks to open
+             a reminder while it's already open, it arrives there (onNewIntent) instead of
+             opening a second copy on top.
+             configChanges: rotating the phone, or when Android switches to the dark theme by
+             itself, the screen is NOT rebuilt from scratch (the sheet would be lost
+             halfway through writing). Language is left out on purpose: there the rebuild is needed. -->
+        <activity
+            android:name=".MainActivity"
+            android:configChanges="orientation|screenSize|screenLayout|smallestScreenSize|uiMode|keyboard|keyboardHidden|navigation"
+            android:exported="true"
+            android:launchMode="singleTask"
+            android:windowSoftInputMode="adjustResize">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <!-- LONG tap on the tile in quick settings: Android opens this screen -->
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE_PREFERENCES" />
+            </intent-filter>
+        </activity>
+
+        <!-- Below Android 13: makes AppCompat remember the language chosen in the drop-down -->
+        <service
+            android:name="androidx.appcompat.app.AppLocalesMetadataHolderService"
+            android:enabled="false"
+            android:exported="false">
+            <meta-data
+                android:name="autoStoreLocales"
+                android:value="true" />
+        </service>
+
+        <!-- The "bell": receives the alarm and shows the notification -->
+        <receiver
+            android:name=".notifiche.AlarmReceiver"
+            android:exported="false" />
+
+        <!-- The "Upcoming reminders" tile in quick settings.
+             Only the system opens it: that's why the BIND_QUICK_SETTINGS_TILE permission is needed.
+             DON'T change the class's name or folder: the tile would disappear
+             from the panel of whoever added it and would have to be added again by hand. -->
+        <service
+            android:name=".notifiche.RiquadroPromemoria"
+            android:exported="true"
+            android:icon="@drawable/ic_riquadro"
+            android:label="@string/tile_titolo"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE" />
+            </intent-filter>
+        </service>
+
+        <!-- After a reboot, an app update, a change of time zone or time
+             it schedules all the alarms again (see BootReceiver) -->
+        <receiver
+            android:name=".notifiche.BootReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+                <action android:name="android.app.action.SCHEDULE_EXACT_ALARM_PERMISSION_STATE_CHANGED" />
+                <action android:name="android.intent.action.TIMEZONE_CHANGED" />
+                <action android:name="android.intent.action.TIME_SET" />
+            </intent-filter>
+        </receiver>
+
+    </application>
+</manifest>

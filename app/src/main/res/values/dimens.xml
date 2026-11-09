@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- The numbers on the clock face (time picker). Material makes them in sp,
+         so with the phone's large text they grew and overlapped ("10" over "22"):
+         the clock face instead doesn't grow. Same size, but in dp: they stay as with normal text. -->
+    <dimen name="material_clock_number_text_size" tools:ignore="SpUsage" tools:override="true">15dp</dimen>
+</resources>

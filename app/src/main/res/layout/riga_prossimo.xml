@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The blue "NEXT REMINDER" card. Below it, a little piece of line
+     ("tail") connects it to the timeline of the following reminders -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/schedaProssimo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/fondo_hero"
+        android:orientation="vertical"
+        android:padding="20dp">
+
+        <!-- "NEXT REMINDER" [in 3 days]. With large text the pill goes below -->
+        <LinearLayout
+            android:id="@+id/rigaEtichetta"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:fontFamily="@font/jakarta_bold"
+                android:letterSpacing="0.1"
+                android:text="@string/prossimo_etichetta"
+                android:textColor="@color/azzurro_chiaro"
+                android:textSize="12sp" />
+
+            <!-- "in 3 days" -->
+            <TextView
+                android:id="@+id/testoTraQuanto"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/fondo_chip_conto"
+                android:fontFamily="@font/jakarta_bold"
+                android:paddingStart="10dp"
+                android:paddingTop="4dp"
+                android:paddingEnd="10dp"
+                android:paddingBottom="4dp"
+                android:textColor="@color/blu_profondo"
+                android:textSize="12sp" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/testoTitolo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:fontFamily="@font/jakarta_extrabold"
+            android:letterSpacing="-0.01"
+            android:textColor="@color/bianco"
+            android:textSize="28sp" />
+
+        <TextView
+            android:id="@+id/testoQuando"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:fontFamily="@font/jakarta_semibold"
+            android:textColor="@color/azzurro_chiaro"
+            android:textSize="15sp" />
+
+        <TextView
+            android:id="@+id/testoRipeti"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:drawableStart="@drawable/ic_ripeti_piccola"
+            android:drawablePadding="8dp"
+            android:drawableTint="@color/azzurro_chiaro"
+            android:fontFamily="@font/jakarta_semibold"
+            android:gravity="center_vertical"
+            android:textColor="@color/azzurro_chiaro"
+            android:textSize="13sp"
+            android:visibility="gone" />
+
+        <!-- "Alerts: Monday 16:00 · Tuesday 15:30" -->
+        <TextView
+            android:id="@+id/testoAvvisi"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:drawableStart="@drawable/ic_campana_piccola"
+            android:drawablePadding="8dp"
+            android:drawableTint="@color/azzurro_chiaro"
+            android:gravity="center_vertical"
+            android:textColor="@color/azzurro_chiaro"
+            android:textSize="12.5sp" />
+    </LinearLayout>
+
+    <!-- 56dp of date + half of the dot's 24dp − half of the line = 67dp -->
+    <View
+        android:id="@+id/coda"
+        android:layout_width="2dp"
+        android:layout_height="11dp"
+        android:layout_marginStart="67dp"
+        android:background="@color/linea_futura" />
+</LinearLayout>

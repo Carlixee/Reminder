@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The "+ Add" pill, at the end of the alert pills -->
+<com.google.android.material.chip.Chip xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/ChipAggiungi"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="@string/avvisi_aggiungi" />

@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- THE ITALIAN TEXTS. The English ones (also used for every other language)
+         are in values/strings.xml: the two lists must have the same names. -->
+    <string name="codice_lingua">it</string>
+    <string name="app_name">Reminder</string>
+    <string name="titolo_app">Promemoria</string>
+    <string name="nuovo">Nuovo</string>
+    <string name="cerca">Cerca</string>
+    <string name="mostra_passati">Promemoria passati</string>
+    <string name="ricerca_suggerimento">Cerca: titolo, giorno…</string>
+    <string name="nessun_passato">Nessun promemoria passato</string>
+    <string name="nessun_risultato">Nessun promemoria trovato</string>
+
+    <!-- The green line under the title -->
+    <string name="salute_ok">Notifiche attive</string>
+    <string name="salute_ko">Notifiche a rischio · tocca qui</string>
+    <plurals name="stato_in_arrivo">
+        <item quantity="one">%d in arrivo</item>
+        <item quantity="other">%d in arrivo</item>
+    </plurals>
+    <string name="stato_niente">niente in arrivo</string>
+    <string name="salute_titolo">Controllo notifiche</string>
+    <string name="salute_ok_messaggio">Tutto a posto: permessi, canale prioritario ed esclusione dal risparmio energetico.\n\nI promemoria partiranno regolarmente.</string>
+    <string name="salute_ko_messaggio">I promemoria potrebbero non arrivare:\n\n%1$s</string>
+    <string name="salute_fix_notifiche">Impostazioni notifiche</string>
+    <string name="salute_fix_batteria">Escludi da batteria</string>
+    <string name="chiudi">Chiudi</string>
+    <string name="salute_p_notifiche">• Le notifiche dell\'app sono disattivate</string>
+    <string name="salute_p_canale_spento">• Il canale «Promemoria» è spento</string>
+    <string name="salute_p_canale_basso">• Il canale non è più prioritario: niente pop-up</string>
+    <string name="salute_p_batteria">• L\'app non è esclusa dall\'ottimizzazione batteria</string>
+    <string name="salute_p_sveglie">• Le sveglie esatte sono spente: gli avvisi possono arrivare fino a un\'ora in ritardo</string>
+    <string name="salute_fix_sveglie">Sveglie esatte</string>
+    <string name="salute_p_non_disturbare">• «Non disturbare» è attivo e Reminder non è tra le app consentite: i promemoria arrivano senza suono. Nella pagina che si apre, aggiungi Reminder alle app consentite.</string>
+    <string name="salute_fix_non_disturbare">Non disturbare</string>
+    <string name="salute_ko_non_disturbare">Non disturbare: senza suono · tocca qui</string>
+    <string name="suggerimento_modifica">Tieni premuto per modificare</string>
+    <string name="suggerimento_elimina">Tieni premuto per eliminare</string>
+    <string name="nota_sospensione_titolo">Per non perdere i promemoria</string>
+    <string name="nota_sospensione_testo">Se non apri Reminder per qualche mese, Android può sospenderlo e cancellare le sue sveglie. Per evitarlo, nella pagina che si apre spegni l\'opzione per le app non utilizzate.</string>
+    <string name="ho_capito">Ho capito</string>
+    <string name="apri_impostazioni">Apri impostazioni</string>
+    <string name="permesso_negato">Senza questo permesso non vedrai nessuna notifica!</string>
+    <string name="canale_nome">Promemoria</string>
+    <string name="canale_descrizione">Avvisi dei promemoria</string>
+
+    <!-- The list -->
+    <string name="prossimo_etichetta">PROSSIMO PROMEMORIA</string>
+    <string name="vuoto_titolo">Niente in programma</string>
+    <string name="vuoto_testo">Tocca «Nuovo» per creare un promemoria</string>
+    <string name="oggi_marcatore">OGGI · %s</string>
+    <string name="passati_etichetta">PASSATI</string>
+    <string name="passati_elimina">Elimina tutti</string>
+    <string name="passati_elimina_titolo">Eliminare i promemoria passati?</string>
+    <string name="passati_elimina_messaggio">I %d promemoria già scaduti verranno eliminati.</string>
+    <string name="avvisi_riga">Avvisi: %s</string>
+    <string name="avvisi_spenti">Avvisi spenti</string>
+    <string name="avvisi_nessuno_riga">Nessun avviso</string>
+    <string name="avvisi_finiti">Nessun altro avviso</string>
+    <string name="adesso">adesso</string>
+    <string name="domani">domani</string>
+    <plurals name="tra_minuti">
+        <item quantity="one">tra %d minuto</item>
+        <item quantity="other">tra %d minuti</item>
+    </plurals>
+    <plurals name="tra_ore">
+        <item quantity="one">tra %d ora</item>
+        <item quantity="other">tra %d ore</item>
+    </plurals>
+    <plurals name="tra_giorni">
+        <item quantity="one">tra %d giorno</item>
+        <item quantity="other">tra %d giorni</item>
+    </plurals>
+
+    <!-- The tile in quick settings -->
+    <string name="tile_titolo">Prossimi promemoria</string>
+    <string name="tile_nessuno">Nessuno in programma</string>
+    <string name="tile_vuoto">Niente in programma.\nI promemoria nuovi compariranno qui.</string>
+    <string name="apri_app">Apri l\'app</string>
+
+    <!-- The "new / edit" sheet -->
+    <string name="personale_titolo">Nuovo promemoria</string>
+    <string name="personale_modifica">Modifica promemoria</string>
+    <string name="etichetta_titolo">TITOLO</string>
+    <string name="personale_suggerimento">Es. Parrucchiere, visita, palestra…</string>
+    <string name="personale_serve_nome">Serve un titolo</string>
+    <string name="etichetta_quando">QUANDO</string>
+    <string name="etichetta_a_partire_da">A PARTIRE DA</string>
+    <string name="etichetta_ora">ORA</string>
+    <string name="etichetta_ripeti">SI RIPETE</string>
+    <string name="ripeti_no">No</string>
+    <string name="ripeti_giorni">Giorni</string>
+    <string name="ripeti_settimane">Settimane</string>
+    <string name="ripeti_mesi">Mesi</string>
+    <string name="ripeti_ogni">Ogni</string>
+    <string name="meno">Meno</string>
+    <string name="piu">Più</string>
+    <string name="g_lun">lun</string>
+    <string name="g_mar">mar</string>
+    <string name="g_mer">mer</string>
+    <string name="g_gio">gio</string>
+    <string name="g_ven">ven</string>
+    <string name="g_sab">sab</string>
+    <string name="g_dom">dom</string>
+    <plurals name="unita_giorni">
+        <item quantity="one">giorno</item>
+        <item quantity="other">giorni</item>
+    </plurals>
+    <plurals name="unita_settimane">
+        <item quantity="one">settimana</item>
+        <item quantity="other">settimane</item>
+    </plurals>
+    <plurals name="unita_mesi">
+        <item quantity="one">mese</item>
+        <item quantity="other">mesi</item>
+    </plurals>
+    <string name="mesi_il_giorno">Il giorno</string>
+    <string name="mesi_il">Il</string>
+    <string name="giorno_titolo">Che giorno del mese?</string>
+    <string name="nota_mesi_corti">Nei mesi più corti: l\'ultimo giorno del mese.</string>
+    <string name="prossima_volta">Prossima volta: %s</string>
+    <string name="giorno_e_ora">%1$s alle %2$s</string>
+    <string name="etichetta_avvisi">AVVISI</string>
+    <string name="avvisi_aggiungi">Aggiungi</string>
+    <string name="avvisi_nessuno">Nessun avviso: il promemoria non suonerà.</string>
+    <string name="avvisi_passati">Gli avvisi di questa volta sono già passati: suonerà alle %1$s.</string>
+    <string name="avvisi_accesi">Avvisi accesi</string>
+    <string name="avvisi_accesi_spiega">Spento: resta in lista, ma non suona</string>
+    <string name="salvato_passato">È già passato: lo trovi tra i passati</string>
+
+    <!-- Favorites and the custom choice, in the sheet -->
+    <string name="avviso_anteprima">La prossima volta: %s</string>
+    <string name="avviso_doppio">Questo avviso c\'è già</string>
+    <string name="preferiti_oppure">Oppure…</string>
+    <string name="preferiti_scegli">Aggiungi un avviso…</string>
+    <string name="preferiti_aggiungi">Aggiungi ai preferiti</string>
+    <string name="preferiti_gia">Nei preferiti</string>
+    <string name="preferiti_togli_titolo">Togliere «%s» dai preferiti?</string>
+    <string name="preferiti_togli">Togli</string>
+    <string name="preferiti_massimo">Al massimo %d preferiti: tieni premuto su uno per toglierlo</string>
+
+    <!-- The two round buttons at the bottom left -->
+    <string name="caffe">Offrimi un caffè</string>
+    <string name="informazioni">Informazioni</string>
+    <string name="lingua_titolo">Lingua</string>
+    <string name="info_messaggio">Versione %1$s, fatta da Carlixee\n\nNiente pubblicità e privacy al 100%%. I tuoi dati non usciranno mai dal tuo dispositivo.\n\nGRAZIE A\n• Plus Jakarta Sans, il carattere dei testi. Copyright 2020 The Plus Jakarta Sans Project Authors, licenza SIL Open Font License 1.1\n• AndroidX, Material Components e icone Material di Google, licenza Apache 2.0\n• Kotlin, di JetBrains, licenza Apache 2.0</string>
+    <string name="licenze_link">Licenze complete ›</string>
+    <string name="licenze_titolo">Licenze</string>
+
+    <string name="salva">Salva</string>
+    <string name="annulla">Annulla</string>
+    <string name="elimina">Elimina</string>
+    <string name="elimina_titolo">Eliminare il promemoria?</string>
+    <string name="elimina_passato_titolo">Vuoi eliminare questo promemoria?</string>
+    <string name="fine_per_sempre">Per sempre</string>
+    <string name="fine_fino_al">Fino al…</string>
+    <string name="fine_titolo">Fino al giorno</string>
+    <string name="elimina_ripetuto">Si ripete: sparisce per sempre, con tutte le sue volte.</string>
+</resources>

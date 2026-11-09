@@ -1,0 +1,19 @@
+# Working files of the PC and of Android Studio: they regenerate by themselves, they're not code
+.gradle/
+.kotlin/
+.idea/
+build/
+captures/
+.cxx/
+*.iml
+local.properties
+
+# Signatures and keys: NEVER on GitHub (the real one is outside the project anyway)
+*.jks
+*.keystore
+*.p12
+firma.properties
+
+# The APKs go in the GitHub Releases, not together with the code
+*.apk
+*.aab

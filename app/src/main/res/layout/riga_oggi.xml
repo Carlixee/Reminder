@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The light blue bookmark between past and future: "TODAY · FRIDAY 6 NOVEMBER".
+     Above it, the tail of the past ones' line -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <View
+        android:layout_width="2dp"
+        android:layout_height="11dp"
+        android:layout_marginStart="67dp"
+        android:background="@color/linea_passata" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingTop="4dp"
+        android:paddingBottom="18dp">
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="2dp"
+            android:layout_weight="1"
+            android:background="@color/azzurro_chiaro" />
+
+        <TextView
+            android:id="@+id/testoOggi"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            android:fontFamily="@font/jakarta_extrabold"
+            android:letterSpacing="0.08"
+            android:textColor="@color/azzurro_chiaro"
+            android:textSize="12sp" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="2dp"
+            android:layout_weight="1"
+            android:background="@color/azzurro_chiaro" />
+    </LinearLayout>
+</LinearLayout>
