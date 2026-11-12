@@ -74,9 +74,12 @@ object DiagnosticaNotifiche {
             val nm = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             val filtro = nm.currentInterruptionFilter
             val consentita = nm.getNotificationChannel(NotificationHelper.CANALE_ID)?.canBypassDnd() == true
-            // Whoever lets "events" through lets us through too (the notifications are of the event type)
-            val eventiAmmessi = filtro == NotificationManager.INTERRUPTION_FILTER_PRIORITY &&
+            // Whoever lets "events" through lets us through too (the notifications are of the event type).
+            // Older Androids let only the apps with "Do Not Disturb" access read those rules: there it
+            // can't be known, and we say they don't get through (the safe side: the line turns orange).
+            val eventiAmmessi = filtro == NotificationManager.INTERRUPTION_FILTER_PRIORITY && runCatching {
                 (nm.notificationPolicy.priorityCategories and NotificationManager.Policy.PRIORITY_CATEGORY_EVENTS) != 0
+            }.getOrDefault(false)
             if (filtro > NotificationManager.INTERRUPTION_FILTER_ALL && !consentita && !eventiAmmessi) {
                 problemi.add(context.getString(R.string.salute_p_non_disturbare))
                 nonDisturbare = true

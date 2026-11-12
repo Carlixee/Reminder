@@ -119,8 +119,7 @@ sealed class Ripetizione {
             }
         }
         is OgniMesiSettimana -> {
-            val quale = "the " + listOf("first", "second", "third", "fourth").getOrElse(ordinale - 1) { "last" } +
-                " " + giornoSettimana.getDisplayName(TextStyle.FULL, Lingua.locale)
+            val quale = "the " + Lingua.ordinale(ordinale) + " " + giornoSettimana.getDisplayName(TextStyle.FULL, Lingua.locale)
             when (ogni) {
                 1 -> "Every month, on $quale"
                 12 -> "Every year, on $quale of ${nomeMese(partenza)}"
@@ -142,13 +141,12 @@ sealed class Ripetizione {
     private fun nelMese(ordinale: Int, g: DayOfWeek): String {
         val nome = g.getDisplayName(TextStyle.FULL, Locale.ITALIAN).lowercase()
         val femminile = g == DayOfWeek.SUNDAY
-        val radice = when (ordinale) { 1 -> "prim"; 2 -> "second"; 3 -> "terz"; 4 -> "quart"; else -> "ultim" }
         val articolo = when {
             ordinale !in 1..4 -> "l'"
             femminile -> "la "
             else -> "il "
         }
-        return articolo + radice + (if (femminile) "a" else "o") + " " + nome
+        return articolo + Lingua.ordinale(ordinale, femminile) + " " + nome
     }
 
     /** Every N weeks on the chosen days: the first good day from `inizio` onwards. */

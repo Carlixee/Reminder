@@ -10,7 +10,6 @@ import android.content.Context
  * reminders), written as plain text: "10:MINUTI,1:ORE,1:GIORNI".
  */
 object Preferiti {
-    private const val FILE = "preferenze"
     private const val CHIAVE = "avvisi_preferiti"
 
     /** Beyond this they don't fit in one and a half rows of the sheet */
@@ -22,13 +21,13 @@ object Preferiti {
     fun leggi(c: Context): List<PreAvviso> {
         // Nothing ever saved = the first time: the initial ones.
         // Saved empty ("") = you removed them: none.
-        val testo = c.getSharedPreferences(FILE, Context.MODE_PRIVATE).getString(CHIAVE, null)
+        val testo = Preferenze.apri(c).getString(CHIAVE, null)
             ?: return INIZIALI
         return daTesto(testo)
     }
 
     fun scrivi(c: Context, lista: List<PreAvviso>) {
-        c.getSharedPreferences(FILE, Context.MODE_PRIVATE).edit().putString(CHIAVE, aTesto(lista)).apply()
+        Preferenze.apri(c).edit().putString(CHIAVE, aTesto(lista)).apply()
     }
 
     /** From the nearest to the farthest, without duplicates */

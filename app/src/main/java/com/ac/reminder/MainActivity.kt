@@ -45,12 +45,14 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView
 import com.ac.reminder.dati.Lingua
+import com.ac.reminder.dati.Preferenze
 import com.ac.reminder.dati.PromemoriaManager
 import com.ac.reminder.notifiche.DiagnosticaNotifiche
 import com.ac.reminder.notifiche.NotificationHelper
 import com.ac.reminder.notifiche.RiquadroPromemoria
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.MaterialAutoCompleteTextView
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -67,6 +69,8 @@ class MainActivity : AppCompatActivity() {
         private const val NOTA_SOSPENSIONE = "nota_sospensione_vista"
         /** Saved once the first-launch tile proposal has been made. */
         private const val NOTA_RIQUADRO = "nota_riquadro_vista"
+        /** Saved when "Don't show again" is tapped on the denied-permission reminder. */
+        private const val PERMESSO_ZITTO = "permesso_negato_zitto"
 
         /** The donations page: the browser opens it, not the app */
         const val LINK_DONAZIONI = "https://paypal.me/Carlixee"
@@ -81,7 +85,15 @@ class MainActivity : AppCompatActivity() {
     private lateinit var numeroPassati: TextView
     private lateinit var bottoneNuovo: ExtendedFloatingActionButton
 
+    /**
+     * "Back" closes the search first. Only while it's open: otherwise it's Android's own "back",
+     * with its preview of the home screen during the gesture (Android 13 and later).
+     */
+    private val indietroChiudeRicerca = object : OnBackPressedCallback(false) {
+        override fun handleOnBackPressed() = chiudiRicerca()
+    }
     private var ricercaAperta = false
+        set(aperta) { field = aperta; indietroChiudeRicerca.isEnabled = aperta }
     /** To notice the moment the keyboard closes */
     private var tastieraEraAperta = false
     /** All the rows, already worked out (the search only filters what to SHOW). */
@@ -102,11 +114,27 @@ class MainActivity : AppCompatActivity() {
     // System dialog asking "Allow this app to send notifications?"
     private val chiediPermessoNotifiche =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { concesso ->
-            if (!concesso) {
-                Toast.makeText(this, R.string.permesso_negato, Toast.LENGTH_LONG).show()
-            }
+            if (!concesso) avvisaPermessoNegato()
             notaSospensione()   // one dialog at a time: the note comes after the permission request
         }
+
+    /**
+     * "Without this permission you won't see any notifications!", in a bar at the bottom with
+     * "Don't show again". Once denied twice Android stops asking and answers "no" by itself at
+     * every launch: whoever really wants it that way can silence the reminder (the orange line stays).
+     */
+    private fun avvisaPermessoNegato() {
+        val preferenze = Preferenze.apri(this)
+        if (preferenze.getBoolean(PERMESSO_ZITTO, false)) return
+        Snackbar.make(findViewById(R.id.radice), R.string.permesso_negato, 8000)
+            .setAnchorView(bottoneNuovo)   // above "+ New", not on top of it
+            .setTextMaxLines(4)
+            .setBackgroundTint(ContextCompat.getColor(this, R.color.superficie_3))
+            .setTextColor(ContextCompat.getColor(this, R.color.testo_principale))
+            .setActionTextColor(ContextCompat.getColor(this, R.color.azzurro_chiaro))
+            .setAction(R.string.non_mostrare_piu) { preferenze.edit().putBoolean(PERMESSO_ZITTO, true).apply() }
+            .show()
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         // The screen reaches the very top, under the transparent status bar, with light
@@ -166,10 +194,6 @@ class MainActivity : AppCompatActivity() {
             notaSospensione()
         }
 
-        // Every time you open the app the alarms are queued again from scratch:
-        // it costs nothing and repairs any alarm lost along the way
-        PromemoriaManager.riprogrammaTutti(this)
-
         adattatore = PromemoriaAdapter(
             allaPressioneLunga = { riga -> nascondiTastiera(); apriEditor(riga) },
             allaPressioneLungaPassato = { riga -> nascondiTastiera(); confermaEliminaPassato(riga) },
@@ -209,18 +233,7 @@ class MainActivity : AppCompatActivity() {
         campoRicerca.doAfterTextChanged { mostra() }
         campoRicerca.setOnEditorActionListener { _, _, _ -> nascondiTastiera(); true }
 
-        // "Back" closes the search first, and only then leaves the app
-        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                if (ricercaAperta) {
-                    chiudiRicerca()
-                } else {
-                    isEnabled = false
-                    onBackPressedDispatcher.onBackPressed()
-                    isEnabled = true
-                }
-            }
-        })
+        onBackPressedDispatcher.addCallback(this, indietroChiudeRicerca)
 
         if (savedInstanceState == null) apriDaRiquadro(intent)
     }
@@ -370,13 +383,13 @@ class MainActivity : AppCompatActivity() {
     /** Press and hold a past one: "Delete this reminder?" */
     private fun confermaEliminaPassato(riga: RigaDati) {
         val p = riga.promemoria
-        val messaggio = "\"${p.titolo}\" · ${Formati.quandoLungo(riga.quando)}" +
+        val messaggio = "\"${p.titolo}\" · ${Formati.quandoLungo(riga.quando, conOra = !p.senzaOrario)}" +
             if (p.siRipete) "\n${p.descrizioneRipetizione()}" else ""
         MaterialAlertDialogBuilder(this)
             .setTitle(R.string.elimina_passato_titolo)
             .setMessage(messaggio)
             .setPositiveButton(R.string.elimina) { _, _ ->
-                PromemoriaManager.rimuovi(this, riga.indice)
+                if (!PromemoriaManager.rimuovi(this, riga.indice)) avvisaSalvataggioFallito()
                 aggiornaLista()
             }
             .setNegativeButton(R.string.annulla, null)
@@ -391,7 +404,7 @@ class MainActivity : AppCompatActivity() {
             .setTitle(R.string.passati_elimina_titolo)
             .setMessage(getString(R.string.passati_elimina_messaggio, scaduti))
             .setPositiveButton(R.string.elimina) { _, _ ->
-                PromemoriaManager.rimuoviPassati(this)
+                if (!PromemoriaManager.rimuoviPassati(this)) avvisaSalvataggioFallito()
                 aggiornaLista()
             }
             .setNegativeButton(R.string.annulla, null)
@@ -464,12 +477,12 @@ class MainActivity : AppCompatActivity() {
         campoRicerca.clearFocus()
     }
 
-    /** All the "searchable" text: day, year, day name, title, repetition. */
+    /** All the "searchable" text: day, year, day name, title, note, repetition. */
     private fun testoRicerca(riga: RigaDati): String {
         val giorno = riga.quando.toLocalDate()
         val p = riga.promemoria
         return "${Formati.giornoCorto(giorno)} ${Formati.dataBreve(giorno)} ${Formati.giornoLungo(giorno)} ${giorno.year} " +
-            "${p.titolo} ${p.descrizioneRipetizione()}"
+            "${p.titolo} ${p.nota} ${p.descrizioneRipetizione()}"
     }
 
     /** Lowercase and without accents: so "mercoledi" finds "mercoledì". */
@@ -505,7 +518,7 @@ class MainActivity : AppCompatActivity() {
      * Not shown where it can't happen (before Android 11) or if it's already switched off.
      */
     private fun notaSospensione() {
-        val preferenze = getSharedPreferences("preferenze", Context.MODE_PRIVATE)
+        val preferenze = Preferenze.apri(this)
         if (preferenze.getBoolean(NOTA_SOSPENSIONE, false) ||
             Build.VERSION.SDK_INT < 30 || packageManager.isAutoRevokeWhitelisted
         ) {
@@ -520,7 +533,10 @@ class MainActivity : AppCompatActivity() {
             .setPositiveButton(R.string.apri_impostazioni) { _, _ ->
                 vista()
                 riquadroAlRitorno = true   // Android only shows the tile request to an app on screen
-                startActivity(IntentCompat.createManageUnusedAppRestrictionsIntent(this, packageName))
+                if (!apriImpostazioni(IntentCompat.createManageUnusedAppRestrictionsIntent(this, packageName))) {
+                    riquadroAlRitorno = false   // we never left: the tile proposal comes now
+                    propostaRiquadro()
+                }
             }
             .setOnCancelListener { vista(); propostaRiquadro() }   // back or a tap outside: seen all the same
             .show().titoloIntero()
@@ -535,7 +551,7 @@ class MainActivity : AppCompatActivity() {
      * nothing appears if it's already there). Before 13 an app can't ask: a note says where to find it.
      */
     private fun propostaRiquadro() {
-        val preferenze = getSharedPreferences("preferenze", Context.MODE_PRIVATE)
+        val preferenze = Preferenze.apri(this)
         if (preferenze.getBoolean(NOTA_RIQUADRO, false)) return
         preferenze.edit().putBoolean(NOTA_RIQUADRO, true).apply()
         if (Build.VERSION.SDK_INT >= 33) chiediRiquadro(silenzioso = true) else spiegaRiquadro()
@@ -595,6 +611,24 @@ class MainActivity : AppCompatActivity() {
             Toast.makeText(this, LINK_DONAZIONI, Toast.LENGTH_LONG).show()  // no browser: at least the address
         }
     }
+
+    /**
+     * Opens a page of the phone's settings. Some phones and tablets don't have every page:
+     * there it says so instead of closing the app. false = it couldn't be opened.
+     */
+    private fun apriImpostazioni(pagina: Intent): Boolean = try {
+        startActivity(pagina)
+        true
+    } catch (e: ActivityNotFoundException) {
+        Toast.makeText(this, R.string.impostazioni_non_apribili, Toast.LENGTH_LONG).show()
+        false
+    } catch (e: SecurityException) {   // a few phones keep some pages for themselves
+        Toast.makeText(this, R.string.impostazioni_non_apribili, Toast.LENGTH_LONG).show()
+        false
+    }
+
+    private fun avvisaSalvataggioFallito() =
+        Toast.makeText(this, R.string.salvataggio_fallito, Toast.LENGTH_LONG).show()
 
     /** The "i": the language drop-down, then version, privacy and thanks. */
     private fun mostraInformazioni() {
@@ -665,7 +699,7 @@ class MainActivity : AppCompatActivity() {
             finestra.setMessage(getString(R.string.salute_ko_messaggio, esito.problemi.joinToString("\n")))
             if (esito.notificheDaSistemare) {
                 finestra.setPositiveButton(R.string.salute_fix_notifiche) { _, _ ->
-                    startActivity(
+                    apriImpostazioni(
                         Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS)
                             .putExtra(Settings.EXTRA_APP_PACKAGE, packageName)
                     )
@@ -673,19 +707,19 @@ class MainActivity : AppCompatActivity() {
             } else if (esito.nonDisturbareDaSistemare) {
                 // The "Do Not Disturb" page, where you choose the apps that are allowed to ring
                 finestra.setPositiveButton(R.string.salute_fix_non_disturbare) { _, _ ->
-                    startActivity(Intent(Settings.ACTION_ZEN_MODE_PRIORITY_SETTINGS))
+                    apriImpostazioni(Intent(Settings.ACTION_ZEN_MODE_PRIORITY_SETTINGS))
                 }
             } else if (esito.sveglieDaSistemare && Build.VERSION.SDK_INT >= 31) {
                 // The main button is free: the exact alarms use it (Android 12 only)
                 finestra.setPositiveButton(R.string.salute_fix_sveglie) { _, _ ->
-                    startActivity(
+                    apriImpostazioni(
                         Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM, Uri.parse("package:$packageName"))
                     )
                 }
             }
             if (esito.batteriaDaSistemare) {
                 finestra.setNeutralButton(R.string.salute_fix_batteria) { _, _ ->
-                    startActivity(
+                    apriImpostazioni(
                         Intent(
                             Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS,
                             Uri.parse("package:$packageName")
@@ -706,6 +740,17 @@ class MainActivity : AppCompatActivity() {
      */
     private val orologio = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) = aggiornaLista()
+    }
+
+    /**
+     * Every time you open the app or come back to it the alarms are queued again from scratch, and
+     * the alerts that never rang are looked for: it costs little and repairs any alarm lost along the
+     * way. Here and not in onCreate: the app can stay in memory for days, and coming back to it
+     * doesn't go through onCreate. (onStart, not onResume: a dialog on top doesn't count as leaving.)
+     */
+    override fun onStart() {
+        super.onStart()
+        PromemoriaManager.riprogrammaTutti(this)
     }
 
     /** On coming back to the app (also from the system settings) everything is checked again. */

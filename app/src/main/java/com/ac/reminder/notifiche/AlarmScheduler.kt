@@ -20,7 +20,7 @@ object AlarmScheduler {
      * scheduling the same id again REPLACES the previous alarm
      * (that's what the "overwrite everything" rule relies on).
      */
-    fun programmaA(context: Context, quandoMillis: Long, id: Int, notifica: Int, titolo: String, testo: String) {
+    fun programmaA(context: Context, quandoMillis: Long, id: Int, notifica: Int, titolo: String, testo: String, nota: String) {
         val am = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
         val intent = Intent(context, AlarmReceiver::class.java).apply {
@@ -28,6 +28,7 @@ object AlarmScheduler {
             putExtra("notifica", notifica)     // the notification's number (tied to the reminder)
             putExtra("titolo", titolo)
             putExtra("testo", testo)
+            putExtra("nota", nota)
             putExtra("quando", quandoMillis)   // the bell needs it to schedule the following ones
         }
         val pi = PendingIntent.getBroadcast(
@@ -49,14 +50,17 @@ object AlarmScheduler {
         }
     }
 
-    /** Cancels the alarm with that id (if it doesn't exist, nothing happens). */
+    /**
+     * Cancels the alarm with that id. NO_CREATE: Android is only asked whether that alarm's
+     * "ticket" exists; if it doesn't there's nothing to cancel, and no ticket is created just to throw it away.
+     */
     fun cancella(context: Context, id: Int) {
-        val am = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val intent = Intent(context, AlarmReceiver::class.java)
         val pi = PendingIntent.getBroadcast(
             context, id, intent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-        )
+            PendingIntent.FLAG_NO_CREATE or PendingIntent.FLAG_IMMUTABLE
+        ) ?: return
+        val am = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         am.cancel(pi)
     }
 }

@@ -43,6 +43,7 @@
     <string name="ho_capito">Got it</string>
     <string name="apri_impostazioni">Open settings</string>
     <string name="permesso_negato">Without this permission you won\'t see any notifications!</string>
+    <string name="non_mostrare_piu">Don\'t show again</string>
     <string name="canale_nome">Reminders</string>
     <string name="canale_descrizione">Reminder alerts</string>
 
@@ -91,6 +92,11 @@
     <string name="etichetta_titolo">TITLE</string>
     <string name="personale_suggerimento">E.g. Hairdresser, check-up, gym…</string>
     <string name="personale_serve_nome">A title is needed</string>
+    <string name="nota_suggerimento">Note (optional)</string>
+    <string name="senza_orario">No time</string>
+    <string name="senza_orario_spiega">It\'s for the whole day</string>
+    <string name="etichetta_avviso_alle">ALERT AT</string>
+    <string name="avviso_oggi_passato">Today\'s alert (%1$s) has already passed: it won\'t ring today.</string>
     <string name="etichetta_quando">WHEN</string>
     <string name="etichetta_a_partire_da">STARTING FROM</string>
     <string name="etichetta_ora">TIME</string>
@@ -134,6 +140,8 @@
     <string name="avvisi_accesi">Alerts on</string>
     <string name="avvisi_accesi_spiega">Off: it stays in the list, but won\'t ring</string>
     <string name="salvato_passato">It\'s already in the past: you\'ll find it among the past ones</string>
+    <string name="salvataggio_fallito">Can\'t save: the phone\'s storage is full</string>
+    <string name="impostazioni_non_apribili">Can\'t open the device settings</string>
 
     <!-- Favorites and the custom choice, in the sheet -->
     <string name="avviso_anteprima">It will ring: %s</string>
@@ -165,5 +173,9 @@
     <string name="fine_per_sempre">Forever</string>
     <string name="fine_fino_al">Until…</string>
     <string name="fine_titolo">End date</string>
+    <string name="pausa_no">No pause</string>
+    <string name="pausa_salta">Skip next</string>
+    <string name="pausa_fino">Pause until…</string>
+    <string name="pausa_titolo">Paused until</string>
     <string name="elimina_ripetuto">It repeats: it will be gone for good, along with all its occurrences.</string>
 </resources>

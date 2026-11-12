@@ -7,6 +7,7 @@ import android.os.Build
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.os.LocaleListCompat
 import com.ac.reminder.dati.Lingua
+import com.ac.reminder.dati.Preferenze
 import java.util.Locale
 
 /**
@@ -22,7 +23,6 @@ import java.util.Locale
  */
 object SceltaLingua {
 
-    private const val FILE = "preferenze"
     private const val CHIAVE = "lingua"
 
     /** The drop-down's items. Until a choice is made, Android's rule applies:
@@ -30,11 +30,11 @@ object SceltaLingua {
     val CODICI = listOf("it", "en")
 
     private fun salvata(c: Context) =
-        c.getSharedPreferences(FILE, Context.MODE_PRIVATE).getString(CHIAVE, "") ?: ""
+        Preferenze.apri(c).getString(CHIAVE, "") ?: ""
 
     /** Changes language: Android reloads the screen by itself, already translated. */
     fun scegli(c: Context, codice: String) {
-        c.getSharedPreferences(FILE, Context.MODE_PRIVATE).edit().putString(CHIAVE, codice).apply()
+        Preferenze.apri(c).edit().putString(CHIAVE, codice).apply()
         aggiornaTesti(c.applicationContext)
         AppCompatDelegate.setApplicationLocales(
             if (codice.isEmpty()) LocaleListCompat.getEmptyLocaleList() else LocaleListCompat.forLanguageTags(codice)

@@ -8,7 +8,10 @@ Personal reminders for Android. No ads, no accounts, 100% privacy: your data nev
 
 - One-off and repeating reminders: every N days, weeks (on the days you pick), months or years, or "the second Thursday of the month". An end date is optional.
 - Several alerts per reminder, from minutes to weeks before, with your favourite ones one tap away.
-- Exact alarms: notifications arrive on the minute, even after a restart. If the phone was off when an alert was due, you are told as soon as you switch it back on.
+- An optional note on each reminder (an address, what to bring): you see it in the list and in the notification.
+- Reminders without a time: they are for the whole day, and you choose when to be alerted.
+- Skip the next occurrence of a repeating reminder, or pause it until a date: it starts again by itself.
+- Exact alarms: notifications arrive on the minute, even after a restart. If an alert could not ring on time (the phone was off, or Android had stopped the app), you are told as soon as possible.
 - A Quick Settings tile with your next reminders (see below).
 - Search, and past reminders kept apart from upcoming ones.
 - A built-in check that warns you if notifications are off, Do Not Disturb would silence them, or the battery saver could delay them.
@@ -61,7 +64,10 @@ The app also contains the Plus Jakarta Sans font (SIL Open Font License 1.1), An
 
 - Promemoria singoli o che si ripetono (ogni N giorni, settimane, mesi, anni, o "il secondo giovedì del mese"), con data di fine se serve.
 - Più avvisi per promemoria, da qualche minuto a settimane prima, con i tuoi preferiti a portata di tocco.
-- Notifiche puntuali al minuto, anche dopo un riavvio. Se il telefono era spento quando doveva suonare un avviso, te lo dice appena lo riaccendi.
+- Una nota facoltativa su ogni promemoria (un indirizzo, cosa portare): la vedi in lista e nella notifica.
+- Promemoria senza orario: valgono per tutto il giorno, e scegli tu a che ora farti avvisare.
+- Per quelli che si ripetono: salti la prossima volta, o li metti in pausa fino a un giorno. Poi ripartono da soli.
+- Notifiche puntuali al minuto, anche dopo un riavvio. Se un avviso non ha potuto suonare in orario (telefono spento, o app fermata da Android), te lo dice appena possibile.
 - Riquadro nelle impostazioni rapide con i prossimi promemoria. L'app te lo propone al primo avvio; puoi aggiungerlo quando vuoi da ⓘ → *Aggiungi il riquadro alle impostazioni rapide*, oppure a mano: scorri due volte dall'alto, tocca la matita (o ⋮ → Modifica) e trascina «Prossimi promemoria» tra i pulsanti. I riquadri nuovi finiscono in fondo al pannello: scorri in giù per trovarlo.
 - Un controllo che ti avvisa se le notifiche sono spente, se «Non disturbare» le zittisce o se il risparmio batteria può ritardarle.
 - **Nessun permesso internet**: l'app non può collegarsi a niente. Niente backup e niente trasferimento su un altro telefono: disinstallandola, i promemoria si cancellano.

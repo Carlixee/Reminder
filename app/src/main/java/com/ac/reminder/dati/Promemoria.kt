@@ -27,9 +27,29 @@ data class Promemoria(
      * its alerts already past (at 15:50 a reminder at 16:00 with "30 minutes before"):
      * instead of staying silent, it rings at 16:00. The following occurrences go back to normal.
      */
-    val allOra: LocalDateTime? = null
+    val allOra: LocalDateTime? = null,
+    /** A second text, optional (an address, what to bring): under the title and in the notification. */
+    val nota: String = "",
+    /**
+     * No time: the reminder is for the whole day. `ora` is then the time its alert rings on that
+     * day, and the reminder stays among the upcoming ones until midnight.
+     */
+    val senzaOrario: Boolean = false,
+    /**
+     * Paused: the last day (included) on which a reminder that repeats does NOT fall. Up to that
+     * day its occurrences are skipped, then it starts again by itself. "Skip the next one" is the
+     * same thing: a pause up to the day of the next occurrence. null, or a day already past = no pause.
+     */
+    val pausa: LocalDate? = null
 ) {
     val siRipete: Boolean get() = ripetizione !is Ripetizione.Nessuna
+
+    /** Is it paused today? (Only the ones that repeat can be.) */
+    fun inPausa(oggi: LocalDate) = siRipete && pausa != null && !pausa.isBefore(oggi)
+
+    /** The first day it falls on, from `da` on and after the pause. null = never again. */
+    fun primoGiornoDa(da: LocalDate): LocalDate? =
+        ripetizione.primaVoltaDa(data, if (inPausa(da)) pausa!!.plusDays(1) else da)
 
     /** Start date + time: used to keep the file in order. */
     val partenza: LocalDateTime get() = data.atTime(ora)
@@ -39,9 +59,10 @@ data class Promemoria(
      * null = it's past: it doesn't repeat, or the repetition is over (it goes among the past ones).
      */
     fun prossimaVolta(adesso: LocalDateTime): LocalDateTime? {
-        var giorno = ripetizione.primaVoltaDa(data, adesso.toLocalDate()) ?: return null
-        if (giorno.atTime(ora).isBefore(adesso)) {
+        var giorno = primoGiornoDa(adesso.toLocalDate()) ?: return null
+        if (!senzaOrario && giorno.atTime(ora).isBefore(adesso)) {
             // falls today, but the time has already passed: look from tomorrow
+            // (one without a time lasts the whole day: today is still its day)
             giorno = ripetizione.primaVoltaDa(data, giorno.plusDays(1)) ?: return null
         }
         if (fino != null && giorno.isAfter(fino)) return null
@@ -93,6 +114,9 @@ data class Promemoria(
         // [{"n":24,"u":"ORE"},{"n":30,"u":"MINUTI"}]
         put("avvisi", JSONArray(avvisi.map { JSONObject().put("n", it.n).put("u", it.unita.name) }))
         allOra?.let { put("allOra", it.toString()) }   // "2026-11-10T16:00"
+        if (nota.isNotEmpty()) put("nota", nota)
+        if (senzaOrario) put("senzaOrario", true)
+        pausa?.let { put("pausa", it.toString()) }     // "2026-11-20"
     }
 
     companion object {
@@ -107,7 +131,12 @@ data class Promemoria(
                 ?.takeIf { it.isNotEmpty() }?.let { LocalDate.parse(it) },
             // If it's missing (or damaged) it doesn't ring at the exact time: as before
             allOra = o.optString("allOra", "").takeIf { it.isNotEmpty() }
-                ?.let { runCatching { LocalDateTime.parse(it) }.getOrNull() }
+                ?.let { runCatching { LocalDateTime.parse(it) }.getOrNull() },
+            // The reminders saved by versions 1.0 and 1.1 have neither: no note, and a time
+            nota = o.optString("nota", ""),
+            senzaOrario = o.optBoolean("senzaOrario", false),
+            pausa = o.optString("pausa", "").takeIf { it.isNotEmpty() }
+                ?.let { runCatching { LocalDate.parse(it) }.getOrNull() }
         )
 
         /** "fino al 30", but "fino all'1", "all'8", "all'11" (numbers starting with a vowel). */

@@ -185,13 +185,19 @@ class PromemoriaAdapter(
             setTextColor(colore(c, if (passato) R.color.testo_secondario else R.color.testo_principale))
         }
         v.findViewById<TextView>(R.id.testoOra).apply {
+            isVisible = !p.senzaOrario   // without a time there's only the day, in the column on the left
             text = Formati.ora(riga.quando.toLocalTime())
             setTextSize(TypedValue.COMPLEX_UNIT_SP, if (passato) 13f else 14f)
             setTextColor(colore(c, if (passato) R.color.testo_tenue else R.color.testo_secondario))
         }
+        v.findViewById<TextView>(R.id.testoNota).apply {
+            isVisible = p.nota.isNotEmpty()
+            text = Formati.notaInRiga(p.nota)
+            setTextColor(colore(c, if (passato) R.color.testo_tenue else R.color.testo_secondario))
+        }
         v.findViewById<TextView>(R.id.testoRipeti).apply {
             isVisible = p.siRipete
-            if (p.siRipete) text = p.descrizioneRipetizione()
+            if (p.siRipete) text = Formati.ripetizioneEPausa(p, adesso.toLocalDate())
             val tinta = colore(c, if (passato) R.color.testo_tenue else R.color.azzurro_chiaro)
             setTextColor(tinta)
             TextViewCompat.setCompoundDrawableTintList(this, ColorStateList.valueOf(tinta))
@@ -219,6 +225,7 @@ class PromemoriaAdapter(
         val traQuanto = v.findViewById<TextView>(R.id.testoTraQuanto)
         val ripeti = v.findViewById<TextView>(R.id.testoRipeti)
         val avvisi = v.findViewById<TextView>(R.id.testoAvvisi)
+        val nota = v.findViewById<TextView>(R.id.testoNota)
         val scheda = v.findViewById<View>(R.id.schedaProssimo)
         v.findViewById<View>(R.id.coda).isVisible = voce.conCoda
 
@@ -226,6 +233,7 @@ class PromemoriaAdapter(
         if (riga == null) {
             titolo.setText(R.string.vuoto_titolo)
             quando.setText(R.string.vuoto_testo)
+            nota.isVisible = false
             traQuanto.isVisible = false
             ripeti.isVisible = false
             avvisi.isVisible = false
@@ -238,11 +246,13 @@ class PromemoriaAdapter(
 
         val p = riga.promemoria
         titolo.text = p.titolo
-        quando.text = Formati.quandoLungo(riga.quando)
+        quando.text = Formati.quandoLungo(riga.quando, conOra = !p.senzaOrario)
+        nota.isVisible = p.nota.isNotEmpty()   // here the note is whole: it's the next thing to do
+        nota.text = p.nota
         traQuanto.isVisible = true
-        traQuanto.text = Formati.traQuanto(c, adesso, riga.quando)
+        traQuanto.text = Formati.traQuanto(c, adesso, riga.quando, conOra = !p.senzaOrario)
         ripeti.isVisible = p.siRipete
-        if (p.siRipete) ripeti.text = p.descrizioneRipetizione()
+        if (p.siRipete) ripeti.text = Formati.ripetizioneEPausa(p, adesso.toLocalDate())
         avvisi.isVisible = true
         avvisi.text = Formati.rigaAvvisi(c, p, riga.quando, adesso)
         avvisi.setCompoundDrawablesRelativeWithIntrinsicBounds(

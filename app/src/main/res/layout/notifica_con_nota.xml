@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The opened notification of a reminder with a note: title, alert, a gap, the note.
+     The system draws the frame around it (icon, app name, time, the arrow) and gives the colours:
+     the two text styles are the ones of the normal notifications, light or dark as the phone is.
+
+     Those styles give size and colour, not the typeface. Samsung writes its notifications with its
+     own font, called "sec" (read from the phone's own layouts: title weight 600, text 400, at most
+     two lines of title, 1dp between title and text): without it these texts looked like another
+     font next to the notifications without a note. Where "sec" doesn't exist the phone's normal
+     font is used, as before. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/notificaTitolo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ellipsize="end"
+        android:fontFamily="sec"
+        android:maxLines="2"
+        android:textAppearance="@style/TextAppearance.Compat.Notification.Title"
+        android:textFontWeight="600"
+        tools:targetApi="p" />
+
+    <!-- "Tra 3 giorni: sabato 14 novembre alle 16:00" can take two lines -->
+    <TextView
+        android:id="@+id/notificaTesto"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="1dp"
+        android:ellipsize="end"
+        android:fontFamily="sec"
+        android:maxLines="2"
+        android:textAppearance="@style/TextAppearance.Compat.Notification"
+        android:textFontWeight="400"
+        tools:targetApi="p" />
+
+    <!-- The gap is this margin. 8 lines: the room Android leaves to this part isn't endless -->
+    <TextView
+        android:id="@+id/notificaNota"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:ellipsize="end"
+        android:fontFamily="sec"
+        android:maxLines="8"
+        android:textAppearance="@style/TextAppearance.Compat.Notification"
+        android:textFontWeight="400"
+        tools:targetApi="p" />
+</LinearLayout>

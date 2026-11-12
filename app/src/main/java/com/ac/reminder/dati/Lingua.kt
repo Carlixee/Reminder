@@ -23,6 +23,17 @@ object Lingua {
     /** Names of days and months: lowercase in Italian ("martedì"), capitalised in English ("Tuesday"). */
     fun nome(s: String): String = if (italiano) s.lowercase(locale) else s
 
+    /**
+     * "primo", "seconda", "ultimo" / "first", "second", "last": which one in the month.
+     * `quale` goes from 1 to 4, anything else is the last. In Italian it agrees with the
+     * day ("la seconda domenica"); English has no masculine and feminine.
+     */
+    fun ordinale(quale: Int, femminile: Boolean = false): String {
+        if (!italiano) return listOf("first", "second", "third", "fourth").getOrElse(quale - 1) { "last" }
+        val radice = when (quale) { 1 -> "prim"; 2 -> "second"; 3 -> "terz"; 4 -> "quart"; else -> "ultim" }
+        return radice + if (femminile) "a" else "o"
+    }
+
     /** In English day numbers need the suffix: 1st, 2nd, 3rd, 4th… 11th, 12th, 13th, 21st. */
     fun ordinaleInglese(n: Int): String {
         val coda = if (n % 100 in 11..13) "th" else when (n % 10) {

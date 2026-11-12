@@ -32,6 +32,9 @@ data class PreAvviso(val n: Int, val unita: Unita) {
 
     val minuti: Long get() = n.toLong() * unita.minuti
 
+    /** Whole days before (1 day, 2 weeks, also 24 hours): the only alerts a reminder without a time can have. */
+    val giorniInteri: Boolean get() = minuti % Unita.GIORNI.minuti == 0L
+
     /** "30 minutes before", "1 hour before", "2 weeks before" */
     fun etichetta() = "$n ${unita.nome(n)} " + Lingua.testo("prima", "before")
 

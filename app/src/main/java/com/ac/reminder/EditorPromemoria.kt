@@ -73,6 +73,8 @@ class EditorPromemoria(
     private val dopo: () -> Unit
 ) {
     private enum class Tipo { NO, GIORNI, SETTIMANE, MESI }
+    /** The pause of one that repeats: none, only the next occurrence, or up to a day */
+    private enum class Pausa { NO, SALTA, FINO }
 
     private val vista: View = attivita.layoutInflater.inflate(R.layout.foglio_promemoria, null)
     val foglio = BottomSheetDialog(attivita)
@@ -81,6 +83,10 @@ class EditorPromemoria(
     private val vecchio = esistente?.promemoria
     private var data: LocalDate = vecchio?.data ?: LocalDate.now().plusDays(1)
     private var ora: LocalTime = vecchio?.ora ?: LocalTime.of(10, 0)
+    /** No time: it's for the whole day, and `ora` is when its alert rings */
+    private var senzaOrario = vecchio?.senzaOrario ?: false
+    /** The alerts in minutes and hours set aside when the time is taken away: they come back with it */
+    private var avvisiConOrario = listOf<PreAvviso>()
     private var tipo = Tipo.NO
     private var ogni = 1
     private val giorniSettimana = mutableSetOf<DayOfWeek>()
@@ -93,6 +99,9 @@ class EditorPromemoria(
     private val avvisi = (vecchio?.avvisi ?: PreAvviso.PREDEFINITI).toMutableList()
     /** Last day of the repetition (included); null = forever */
     private var fino: LocalDate? = vecchio?.fino
+    private var pausaModo = Pausa.NO
+    /** With "Pause until…": the last day of the pause (included) */
+    private var pausaFino: LocalDate? = null
 
     private val giornoMeseScelto get() = giornoMese ?: data.dayOfMonth
     private val ordinaleScelto get() = ordinale ?: ((data.dayOfMonth - 1) / 7 + 1).let { if (it > 4) -1 else it }
@@ -100,7 +109,10 @@ class EditorPromemoria(
 
     // --- The pieces of the sheet ---
     private val campoTitolo = vista.findViewById<EditText>(R.id.campoTitolo)
+    private val campoNota = vista.findViewById<EditText>(R.id.campoNota)
     private val etichettaData = vista.findViewById<TextView>(R.id.etichettaData)
+    private val etichettaOra = vista.findViewById<TextView>(R.id.etichettaOra)
+    private val interruttoreSenzaOrario = vista.findViewById<MaterialSwitch>(R.id.interruttoreSenzaOrario)
     private val testoData = vista.findViewById<TextView>(R.id.testoData)
     private val testoOra = vista.findViewById<TextView>(R.id.testoOra)
     private val segmentiRipeti = listOf(R.id.ripetiNo, R.id.ripetiGiorni, R.id.ripetiSettimane, R.id.ripetiMesi)
@@ -119,6 +131,10 @@ class EditorPromemoria(
     private val gruppoFine = vista.findViewById<View>(R.id.gruppoFine)
     private val finePerSempre = vista.findViewById<TextView>(R.id.finePerSempre)
     private val fineFinoAl = vista.findViewById<TextView>(R.id.fineFinoAl)
+    private val gruppoPausa = vista.findViewById<View>(R.id.gruppoPausa)
+    private val segmentoPausaNo = vista.findViewById<TextView>(R.id.pausaNo)
+    private val segmentoPausaSalta = vista.findViewById<TextView>(R.id.pausaSalta)
+    private val segmentoPausaFino = vista.findViewById<TextView>(R.id.pausaFino)
     private val riquadroRiassunto = vista.findViewById<View>(R.id.riquadroRiassunto)
     private val testoRiassunto = vista.findViewById<TextView>(R.id.testoRiassunto)
     private val testoProssima = vista.findViewById<TextView>(R.id.testoProssima)
@@ -141,8 +157,8 @@ class EditorPromemoria(
     /** The "+ 10 min" pills: they apply to every reminder and stay on the phone */
     private val preferiti = Preferiti.leggi(attivita).toMutableList()
     private var pannelloAperto = false
-    private var nAvviso = 15
-    private var unitaAvviso = Unita.MINUTI
+    private var nAvviso = if (senzaOrario) 1 else 15
+    private var unitaAvviso = if (senzaOrario) Unita.GIORNI else Unita.MINUTI
 
     init {
         // From the saved reminder to the sheet's choices
@@ -156,10 +172,21 @@ class EditorPromemoria(
             }
             else -> {}
         }
+        // A pause still running: if it stops exactly at the next occurrence it's "skip the next one"
+        vecchio?.pausa?.takeIf { vecchio.inPausa(LocalDate.now()) }?.let { ultimoGiorno ->
+            val prossima = vecchio.copy(pausa = null).prossimaVolta(LocalDateTime.now())?.toLocalDate()
+            if (ultimoGiorno == prossima) pausaModo = Pausa.SALTA
+            else { pausaModo = Pausa.FINO; pausaFino = ultimoGiorno }
+        }
         vista.findViewById<TextView>(R.id.titoloFoglio)
             .setText(if (esistente == null) R.string.personale_titolo else R.string.personale_modifica)
         campoTitolo.setText(vecchio?.titolo ?: "")
         campoTitolo.setOnEditorActionListener { _, _, _ -> nascondiTastiera(); true }
+        campoNota.setText(vecchio?.nota ?: "")
+        // First the switch is set, then the listener is attached: opening the sheet isn't "a change"
+        interruttoreSenzaOrario.isChecked = senzaOrario
+        interruttoreSenzaOrario.setOnCheckedChangeListener { _, acceso -> cambiaSenzaOrario(acceso) }
+        vista.findViewById<View>(R.id.rigaSenzaOrario).setOnClickListener { interruttoreSenzaOrario.toggle() }
         interruttore.isChecked = vecchio?.attivo ?: true
         vista.findViewById<View>(R.id.rigaAccesi).setOnClickListener { interruttore.toggle() }
 
@@ -241,6 +268,9 @@ class EditorPromemoria(
 
         finePerSempre.setOnClickListener { fino = null; aggiorna() }
         fineFinoAl.setOnClickListener { nascondiTastiera(); scegliFine() }
+        segmentoPausaNo.setOnClickListener { pausaModo = Pausa.NO; aggiorna() }
+        segmentoPausaSalta.setOnClickListener { pausaModo = Pausa.SALTA; aggiorna() }
+        segmentoPausaFino.setOnClickListener { nascondiTastiera(); scegliPausa() }
 
         // Alerts: "Or…" opens and closes the custom choice
         testoOppure.setOnClickListener {
@@ -285,8 +315,42 @@ class EditorPromemoria(
     /** "Until" only applies to the ones that repeat. */
     private fun finoScelto(): LocalDate? = if (tipo == Tipo.NO) null else fino
 
+    /** The current choices without the pause: what "the next occurrence" would be. */
+    private fun senzaPausa() =
+        Promemoria(data, ora, "", ripetizione = ripetizioneScelta(), fino = finoScelto(), senzaOrario = senzaOrario)
+
+    /**
+     * The last day of the pause, to save. "Skip the next one" is worked out at this moment (the day
+     * of the next occurrence), so it follows the date and the repetition if you change them here.
+     */
+    private fun pausaScelta(): LocalDate? = when {
+        tipo == Tipo.NO -> null
+        pausaModo == Pausa.SALTA -> senzaPausa().prossimaVolta(LocalDateTime.now())?.toLocalDate()
+        pausaModo == Pausa.FINO -> pausaFino
+        else -> null
+    }
+
     /** A "test" reminder with the current choices (for the summary and previews). */
-    private fun prova() = Promemoria(data, ora, "", ripetizione = ripetizioneScelta(), fino = finoScelto())
+    private fun prova() = senzaPausa().copy(pausa = pausaScelta())
+
+    /**
+     * The "No time" switch. Without a time the alerts can only be whole days before ("1 day", "2 weeks"):
+     * the ones in minutes and hours are set aside, and come back if the time comes back.
+     */
+    private fun cambiaSenzaOrario(acceso: Boolean) {
+        nascondiTastiera()
+        senzaOrario = acceso
+        if (acceso) {
+            avvisiConOrario = avvisi.filterNot { it.giorniInteri }
+            avvisi.removeAll(avvisiConOrario)
+            if (unitaAvviso.minuti < Unita.GIORNI.minuti) { unitaAvviso = Unita.GIORNI; nAvviso = 1 }
+        } else {
+            val tutti = PreAvviso.ordina(avvisi + avvisiConOrario).take(PreAvviso.MASSIMO)
+            avvisi.clear(); avvisi += tutti
+            avvisiConOrario = emptyList()
+        }
+        anima { aggiorna() }
+    }
 
     /** The next time it would fall with the current choices. */
     private fun prossimaVolta(): LocalDateTime? = prova().prossimaVolta(LocalDateTime.now())
@@ -296,6 +360,7 @@ class EditorPromemoria(
         val c = attivita
         testoData.text = Formati.dataCasella(data)
         testoOra.text = Formati.ora(ora)
+        etichettaOra.setText(if (senzaOrario) R.string.etichetta_avviso_alle else R.string.etichetta_ora)
         etichettaData.setText(if (tipo == Tipo.NO) R.string.etichetta_quando else R.string.etichetta_a_partire_da)
 
         segmentiRipeti.forEachIndexed { i, s -> s.isSelected = i == tipo.ordinal }
@@ -326,6 +391,13 @@ class EditorPromemoria(
         fineFinoAl.isSelected = fino != null
         fineFinoAl.text = fino?.let { Formati.finoAl(it) } ?: c.getString(R.string.fine_fino_al)
 
+        gruppoPausa.isVisible = tipo != Tipo.NO
+        segmentoPausaNo.isSelected = pausaModo == Pausa.NO
+        segmentoPausaSalta.isSelected = pausaModo == Pausa.SALTA
+        segmentoPausaFino.isSelected = pausaModo == Pausa.FINO
+        segmentoPausaFino.text = pausaFino?.takeIf { pausaModo == Pausa.FINO }?.let { Formati.finoAl(it) }
+            ?: c.getString(R.string.pausa_fino)
+
         val r = ripetizioneScelta()
         riquadroRiassunto.isVisible = tipo != Tipo.NO
         var riassunto = prova().descrizioneRipetizione()
@@ -336,7 +408,7 @@ class EditorPromemoria(
         if (prossima != null) {
             testoProssima.text = c.getString(
                 R.string.prossima_volta,
-                Formati.giornoEOra(c, prossima)
+                if (senzaOrario) Formati.giornoLungo(prossima.toLocalDate()) else Formati.giornoEOra(c, prossima)
             )
         }
 
@@ -357,18 +429,24 @@ class EditorPromemoria(
             chip.setOnCloseIconClickListener { anima { avvisi.remove(a); aggiorna() } }
             gruppoAvvisi.addView(chip)
         }
-        // In orange: "No alerts…", or "the alerts have already passed: it will ring at 16:00"
-        val allOra = Avvisi.daSuonareAllOra(prova().copy(avvisi = avvisi.toList()), LocalDateTime.now())
-        testoNessunAvviso.isVisible = avvisi.isEmpty() || allOra != null
-        testoNessunAvviso.text =
-            if (allOra != null) attivita.getString(R.string.avvisi_passati, Formati.ora(allOra.toLocalTime()))
-            else attivita.getString(R.string.avvisi_nessuno)
+        // In orange: "No alerts…", or "the alerts have already passed: it will ring at 16:00".
+        // Without a time the alert of the day is always there: it's only said when today's has already gone
+        val adesso = LocalDateTime.now()
+        val allOra = Avvisi.daSuonareAllOra(prova().copy(avvisi = avvisi.toList()), adesso)
+        val oggiPassato = senzaOrario && prossimaVolta()?.isBefore(adesso) == true
+        testoNessunAvviso.isVisible = if (senzaOrario) oggiPassato else avvisi.isEmpty() || allOra != null
+        testoNessunAvviso.text = when {
+            oggiPassato -> attivita.getString(R.string.avviso_oggi_passato, Formati.ora(ora))
+            allOra != null -> attivita.getString(R.string.avvisi_passati, Formati.ora(allOra.toLocalTime()))
+            else -> attivita.getString(R.string.avvisi_nessuno)
+        }
 
         val cePosto = avvisi.size < PreAvviso.MASSIMO
         gruppoPreferiti.removeAllViews()
         if (cePosto) {
             for (p in preferiti) {
                 if (avvisi.any { it.minuti == p.minuti }) continue   // already among the alerts: no point offering it again
+                if (senzaOrario && !p.giorniInteri) continue         // "10 min before" of what, without a time?
                 val chip = inflater.inflate(R.layout.chip_aggiungi, gruppoPreferiti, false) as Chip
                 chip.text = p.breve()
                 chip.setOnClickListener { nascondiTastiera(); aggiungiAvviso(p) }
@@ -390,6 +468,7 @@ class EditorPromemoria(
         val c = attivita
         segmentiUnita.forEachIndexed { i, s ->
             val u = Unita.values()[i]
+            s.isVisible = !senzaOrario || u.minuti >= Unita.GIORNI.minuti   // without a time: days and weeks only
             s.text = u.nome(nAvviso)
             s.isSelected = u == unitaAvviso
         }
@@ -570,7 +649,14 @@ class EditorPromemoria(
             .setSelection(data.toEpochDay() * 86_400_000L)
             .build()
         scelta.addOnPositiveButtonClickListener { millis ->
-            data = Instant.ofEpochMilli(millis).atZone(ZoneOffset.UTC).toLocalDate()
+            val nuova = Instant.ofEpochMilli(millis).atZone(ZoneOffset.UTC).toLocalDate()
+            // Weeks, like months: if the only day that's on is the date's own, it follows the date.
+            // Days you picked yourself stay as they are.
+            if (giorniSettimana == setOf(data.dayOfWeek)) {
+                giorniSettimana.clear()
+                giorniSettimana += nuova.dayOfWeek
+            }
+            data = nuova
             // An end that falls before the start makes no sense: back to "forever"
             if (fino?.isBefore(data) == true) fino = null
             aggiorna()
@@ -598,13 +684,34 @@ class EditorPromemoria(
         scelta.show(attivita.supportFragmentManager, "fino")
     }
 
+    /** "Pause until…": the last day without the reminder, from today on. */
+    private fun scegliPausa() {
+        val oggiMillis = LocalDate.now().toEpochDay() * 86_400_000L
+        val scelta = MaterialDatePicker.Builder.datePicker()
+            .setTitleText(R.string.pausa_titolo)
+            .setSelection((pausaFino ?: LocalDate.now().plusWeeks(1)).toEpochDay() * 86_400_000L)
+            .setCalendarConstraints(
+                CalendarConstraints.Builder()
+                    .setStart(oggiMillis)
+                    .setValidator(DateValidatorPointForward.from(oggiMillis))
+                    .build()
+            )
+            .build()
+        scelta.addOnPositiveButtonClickListener { millis ->
+            pausaFino = Instant.ofEpochMilli(millis).atZone(ZoneOffset.UTC).toLocalDate()
+            pausaModo = Pausa.FINO
+            aggiorna()
+        }
+        scelta.show(attivita.supportFragmentManager, "pausa")
+    }
+
     private fun scegliOra() {
         val scelta = MaterialTimePicker.Builder()
             .setTimeFormat(TimeFormat.CLOCK_24H)
             .setInputMode(MaterialTimePicker.INPUT_MODE_CLOCK)   // round clock, not keypad
             .setHour(ora.hour)
             .setMinute(ora.minute)
-            .setTitleText(R.string.etichetta_ora)
+            .setTitleText(if (senzaOrario) R.string.etichetta_avviso_alle else R.string.etichetta_ora)
             .build()
         scelta.addOnPositiveButtonClickListener {
             ora = LocalTime.of(scelta.hour, scelta.minute)
@@ -680,10 +787,17 @@ class EditorPromemoria(
             attivo = interruttore.isChecked,
             ripetizione = ripetizioneScelta(),
             avvisi = avvisi.toList(),
-            fino = finoScelto()
+            fino = finoScelto(),
+            nota = campoNota.text.toString().trim(),
+            senzaOrario = senzaOrario,
+            pausa = pausaScelta()
         ).let { it.copy(allOra = Avvisi.daSuonareAllOra(it, LocalDateTime.now())) }
-        if (esistente == null) PromemoriaManager.aggiungi(attivita, nuovo)
+        val salvato = if (esistente == null) PromemoriaManager.aggiungi(attivita, nuovo)
         else PromemoriaManager.modifica(attivita, esistente.indice, nuovo)
+        if (!salvato) {   // storage full: the sheet stays open, nothing is lost of what was typed
+            Toast.makeText(attivita, R.string.salvataggio_fallito, Toast.LENGTH_LONG).show()
+            return
+        }
 
         if (nuovo.prossimaVolta(LocalDateTime.now()) == null) {
             Toast.makeText(attivita, R.string.salvato_passato, Toast.LENGTH_LONG).show()
@@ -700,12 +814,15 @@ class EditorPromemoria(
         val messaggio =
             if (p.siRipete) "\"${p.titolo}\" · ${p.descrizioneRipetizione()}\n\n" +
                 attivita.getString(R.string.elimina_ripetuto)
-            else "\"${p.titolo}\" · ${Formati.quandoLungo(riga.quando)}"
+            else "\"${p.titolo}\" · ${Formati.quandoLungo(riga.quando, conOra = !p.senzaOrario)}"
         MaterialAlertDialogBuilder(attivita)
             .setTitle(R.string.elimina_titolo)
             .setMessage(messaggio)
             .setPositiveButton(R.string.elimina) { _, _ ->
-                PromemoriaManager.rimuovi(attivita, riga.indice)
+                if (!PromemoriaManager.rimuovi(attivita, riga.indice)) {
+                    Toast.makeText(attivita, R.string.salvataggio_fallito, Toast.LENGTH_LONG).show()
+                    return@setPositiveButton
+                }
                 foglio.dismiss()
                 dopo()
             }
@@ -720,22 +837,13 @@ class EditorPromemoria(
         val tastiera = attivita.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         tastiera.hideSoftInputFromWindow(campoTitolo.windowToken, 0)
         campoTitolo.clearFocus()
+        campoNota.clearFocus()
     }
 
     private fun nomeGiorno(g: DayOfWeek) = Lingua.nome(g.getDisplayName(TextStyle.FULL, Lingua.locale))
 
     /** Italian "secondo" giovedì but "seconda" domenica; English has no masculine and feminine */
-    private fun nomeOrdinale(o: Int, g: DayOfWeek): String {
-        if (!Lingua.italiano) return listOf("first", "second", "third", "fourth").getOrElse(o - 1) { "last" }
-        val femminile = g == DayOfWeek.SUNDAY
-        return when (o) {
-            1 -> if (femminile) "prima" else "primo"
-            2 -> if (femminile) "seconda" else "secondo"
-            3 -> if (femminile) "terza" else "terzo"
-            4 -> if (femminile) "quarta" else "quarto"
-            else -> if (femminile) "ultima" else "ultimo"
-        }
-    }
+    private fun nomeOrdinale(o: Int, g: DayOfWeek) = Lingua.ordinale(o, femminile = g == DayOfWeek.SUNDAY)
 
     private fun dp(valore: Int) = (valore * attivita.resources.displayMetrics.density).toInt()
 }

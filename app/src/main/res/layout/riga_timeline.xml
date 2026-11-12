@@ -132,6 +132,18 @@
                 android:textSize="14sp" />
         </LinearLayout>
 
+        <!-- The note, on one line: the whole of it is in the blue card, in the notification and in the sheet -->
+        <TextView
+            android:id="@+id/testoNota"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textColor="@color/testo_secondario"
+            android:textSize="13sp"
+            android:visibility="gone" />
+
         <TextView
             android:id="@+id/testoRipeti"
             android:layout_width="wrap_content"

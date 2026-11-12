@@ -28,9 +28,7 @@ import com.ac.reminder.testoGrande
 import com.ac.reminder.dati.Lingua
 import com.ac.reminder.dati.Promemoria
 import com.ac.reminder.dati.PromemoriaManager
-import java.time.LocalDate
 import java.time.LocalDateTime
-import java.time.format.TextStyle
 
 /**
  * The "Upcoming reminders" tile in quick settings.
@@ -50,25 +48,28 @@ class RiquadroPromemoria : TileService() {
     private companion object {
         /** How many rows are visible without scrolling: the dialog never gets taller than this. */
         const val VISIBILI = 5
+        /** The number of the tile's "permission to open" (the notifications use 0). */
+        const val RICHIESTA_RIQUADRO = 1
     }
 
     /** The dialog open right now: tapping the bell again brings it to the front, it doesn't pile up. */
     private var finestraAperta: Dialog? = null
 
     /**
-     * Android calls it every time you open the panel: under the name
-     * the next reminder shows up (time first, so it can be read even when cut off).
+     * Android calls it every time you open the panel: under the name it says WHEN the next
+     * reminder is ("oggi 15:00", "gio 12/11 15:00"). Which one it is, you see by tapping.
      */
     override fun onStartListening() {
         super.onStartListening()
         val riquadro = qsTile ?: return
-        val prossimo = PromemoriaManager.inArrivo(this, LocalDateTime.now()).firstOrNull()
+        val adesso = LocalDateTime.now()
+        val prossimo = PromemoriaManager.inArrivo(this, adesso).firstOrNull()
 
         riquadro.label = getString(R.string.tile_titolo)
         riquadro.state = if (prossimo != null) Tile.STATE_ACTIVE else Tile.STATE_INACTIVE
         if (Build.VERSION.SDK_INT >= 29) {
             riquadro.subtitle =
-                if (prossimo != null) breve(prossimo.first, prossimo.second)
+                if (prossimo != null) Formati.quandoBreve(adesso, prossimo.second, conOra = !prossimo.first.senzaOrario)
                 else getString(R.string.tile_nessuno)
         }
         riquadro.updateTile()
@@ -77,14 +78,6 @@ class RiquadroPromemoria : TileService() {
     override fun onClick() {
         super.onClick()
         mostraFinestra()
-    }
-
-    /** "18:00 · Gym" today, "Thu 14:00 · Gym" on the other days. */
-    private fun breve(p: Promemoria, quando: LocalDateTime): String {
-        val giorno =
-            if (quando.toLocalDate() == LocalDate.now()) ""
-            else Lingua.nome(quando.dayOfWeek.getDisplayName(TextStyle.SHORT, Lingua.locale)).replace(".", "") + " "
-        return "$giorno${Formati.ora(quando.toLocalTime())} · ${p.titolo}"
     }
 
     /**
@@ -166,10 +159,11 @@ class RiquadroPromemoria : TileService() {
                 setTextColor(tinta(if (primo) R.color.bianco else R.color.testo_principale))
                 if (grande) maxLines = 2
             }
-            // "16:00 · in 3 days", "22:00 · every week: Sat"
+            // "16:00 · in 3 days", "22:00 · every week: Sat"; without a time: "today", "in 3 days"
             riga.findViewById<TextView>(R.id.testoDettaglio).apply {
-                val pezzi = mutableListOf(Formati.ora(quando.toLocalTime()))
-                if (primo) pezzi += Formati.traQuanto(contesto, adesso, quando)
+                val pezzi = mutableListOf<String>()
+                if (!p.senzaOrario) pezzi += Formati.ora(quando.toLocalTime())
+                if (primo || p.senzaOrario) pezzi += Formati.traQuanto(contesto, adesso, quando, conOra = !p.senzaOrario)
                 if (p.siRipete) pezzi += Formati.ripetizioneBreve(p)
                 if (!p.attivo) pezzi += getString(R.string.avvisi_spenti).lowercase(Lingua.locale)
                 text = pezzi.joinToString(" · ")
@@ -223,8 +217,10 @@ class RiquadroPromemoria : TileService() {
                 .putExtra(MainActivity.EXTRA_PARTENZA, p.partenza.toString())
         }
         if (Build.VERSION.SDK_INT >= 34) {
+            // Its own number: with the notifications' one (0) Android would treat the two as the SAME
+            // "permission to open", and a notification already in the shade would open this sheet too
             val apri = PendingIntent.getActivity(
-                this, 0, intent, PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+                this, RICHIESTA_RIQUADRO, intent, PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
             )
             startActivityAndCollapse(apri)
         } else {

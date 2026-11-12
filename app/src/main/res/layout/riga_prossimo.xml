@@ -66,6 +66,18 @@
             android:textColor="@color/azzurro_chiaro"
             android:textSize="15sp" />
 
+        <!-- The note, whole (a very long one stops at 6 lines) -->
+        <TextView
+            android:id="@+id/testoNota"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:ellipsize="end"
+            android:maxLines="6"
+            android:textColor="@color/bianco"
+            android:textSize="14sp"
+            android:visibility="gone" />
+
         <TextView
             android:id="@+id/testoRipeti"
             android:layout_width="wrap_content"

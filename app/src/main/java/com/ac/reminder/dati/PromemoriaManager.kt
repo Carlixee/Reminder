@@ -1,9 +1,11 @@
 package com.ac.reminder.dati
 
 import android.content.Context
+import android.provider.Settings
 import android.util.AtomicFile
 import androidx.core.app.NotificationManagerCompat
 import com.ac.reminder.notifiche.AlarmScheduler
+import com.ac.reminder.notifiche.NotificationHelper
 import java.io.File
 import java.io.FileNotFoundException
 import java.io.IOException
@@ -30,18 +32,61 @@ object PromemoriaManager {
     private fun idBase(indice: Int) = BASE_ID + (indice + 1) * ID_PER_PROMEMORIA
 
     /**
-     * Up to when the alerts are "in order" (rung, or queued again from there on).
-     * When the phone is switched on it says from when to look for alerts missed while it was off.
+     * The bookmark: up to when the alerts are "in order" (rung, reported, or queued again from
+     * there on). Every alert that rings moves it forward, so whatever was due after it never rang.
+     * It's the time on the phone's clock ("2026-11-11T15:30"), like the alerts themselves: after a
+     * trip to another time zone nothing is taken for missed just because the clock went back.
      */
+    private const val CHIAVE_SEGNO = "avvisi_segno"
+    /** Versions 1.0 and 1.1 kept the bookmark here, in milliseconds: read once, then replaced. */
     private const val CHIAVE_FINO_A = "avvisi_fino_a"
-    private fun preferenze(context: Context) = context.getSharedPreferences("preferenze", Context.MODE_PRIVATE)
-    private fun millis(q: LocalDateTime) = q.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
+    /** How many times the phone had been switched on when the bookmark was written. */
+    private const val CHIAVE_ACCENSIONI = "avvisi_accensioni"
 
-    /** `soloAvanti`: an alert that rang late doesn't move the mark back. */
+    /** Android counts the times the phone is switched on; -1 if this phone doesn't say. */
+    private fun accensioni(context: Context): Int =
+        Settings.Global.getInt(context.contentResolver, Settings.Global.BOOT_COUNT, -1)
+
+    /** The bookmark, or null if it was never written (first launch). */
+    private fun segno(context: Context): LocalDateTime? {
+        val p = Preferenze.apri(context)
+        p.getString(CHIAVE_SEGNO, null)?.let { testo ->
+            runCatching { LocalDateTime.parse(testo) }.getOrNull()?.let { return it }
+        }
+        val millis = p.getLong(CHIAVE_FINO_A, 0L)
+        return if (millis == 0L) null
+        else Instant.ofEpochMilli(millis).atZone(ZoneId.systemDefault()).toLocalDateTime()
+    }
+
+    /** `soloAvanti`: an alert that rang late doesn't move the bookmark back. */
     private fun segnaFinoA(context: Context, quando: LocalDateTime, soloAvanti: Boolean = false) {
-        val p = preferenze(context)
-        if (soloAvanti && millis(quando) <= p.getLong(CHIAVE_FINO_A, 0L)) return
-        p.edit().putLong(CHIAVE_FINO_A, millis(quando)).apply()
+        if (soloAvanti && segno(context)?.isBefore(quando) == false) return
+        val scrivi = Preferenze.apri(context).edit().putString(CHIAVE_SEGNO, quando.toString()).remove(CHIAVE_FINO_A)
+        // An alert that rings doesn't touch the count: only queueing the alarms again "sees" a switch-on
+        if (!soloAvanti) scrivi.putInt(CHIAVE_ACCENSIONI, accensioni(context))
+        scrivi.apply()
+    }
+
+    /**
+     * Before the bookmark moves: the alerts due after it that never rang. Either they fell while the
+     * phone was off (Android deletes the alarms at shutdown), or they're late in Android's queue and
+     * queueing everything again would throw them away in silence. One notification per reminder,
+     * for the most recent one.
+     *
+     * `accensione`: Android has just said the phone was switched on. But it says so also to an app
+     * that was only stopped and then started again, with the phone on all along: when the count of
+     * switch-ons can be read, the count decides. (It also doesn't wait for that signal, which can
+     * arrive when the app is already open.)
+     */
+    private fun recupera(context: Context, lista: List<Promemoria>, adesso: LocalDateTime, accensione: Boolean = false) {
+        val da = segno(context) ?: return
+        val contate = accensioni(context)
+        val allora = Preferenze.apri(context).getInt(CHIAVE_ACCENSIONI, -1)
+        val spento = if (contate != -1 && allora != -1) contate != allora else accensione
+        for (p in lista) {
+            val avviso = Avvisi.perso(p, da, adesso) ?: continue
+            NotificationHelper.mostraNonSuonato(context, p, avviso, spento, adesso)
+        }
     }
 
     /**
@@ -78,6 +123,8 @@ object PromemoriaManager {
             .mapNotNull { p -> p.prossimaVolta(adesso)?.let { p to it } }
             .sortedBy { it.second }
 
+    // These four answer false when the file couldn't be written (phone storage full):
+    // nothing has changed, and whoever asked says so.
     fun aggiungi(context: Context, nuovo: Promemoria) = cambia(context) { it.add(nuovo) }
 
     fun modifica(context: Context, indice: Int, nuovo: Promemoria) =
@@ -95,53 +142,60 @@ object PromemoriaManager {
 
     /**
      * Every change goes through here, always in the same order:
-     * switch off the old alarms → change → save in order → switch on again.
-     * (Positions change, and so do the ids: everything is redone.)
+     * report what never rang → switch off the old alarms → change → save in order → switch on again.
+     * (Positions change, and so do the ids: the alarms are redone. Only for the reminders that
+     * can have any, though: the past ones are left alone, see Avvisi.puoAvereSveglie.)
+     * If saving fails the old list stays, and so do its alarms: they are queued again as they were.
      */
-    private fun cambia(context: Context, modifica: (MutableList<Promemoria>) -> Unit) {
+    private fun cambia(context: Context, modifica: (MutableList<Promemoria>) -> Unit): Boolean {
+        val adesso = LocalDateTime.now()
         val lista = carica(context)
         val prima = lista.toList()
-        lista.indices.forEach { spegni(context, it) }
+        val segno = segnoNonFuturo(context, adesso)
+        recupera(context, prima, adesso)
+        prima.forEachIndexed { i, p -> if (Avvisi.puoAvereSveglie(p, segno)) spegni(context, i) }
         modifica(lista)
         lista.sortBy { it.partenza }
-        salva(context, lista)
-        togliNotificheVecchie(context, prima, lista)
-        val adesso = LocalDateTime.now()
+        val salvata = try {
+            salva(context, lista)
+            true
+        } catch (e: IOException) {
+            false
+        }
+        val valida = if (salvata) lista else prima   // the list that is in the file now
+        if (salvata) togliNotificheVecchie(context, prima, lista)
         segnaFinoA(context, adesso)
-        val quanti = quota(lista, adesso)
-        lista.forEachIndexed { i, p -> accendi(context, i, p, adesso, quanti) }
+        val quanti = quota(valida, adesso)
+        valida.forEachIndexed { i, p -> if (Avvisi.puoAvereSveglie(p, adesso)) accendi(context, i, p, adesso, quanti) }
+        return salvata
     }
 
-    /** After a reboot or an app update: everything is scheduled again. */
-    fun riprogrammaTutti(context: Context) {
+    /**
+     * Queues the alarms again: when the app is opened (it repairs any alarm lost along the way),
+     * after the phone is switched on or the app updated, when the time or the time zone changes.
+     * First it reports the alerts that never rang, then it moves the bookmark to now.
+     */
+    fun riprogrammaTutti(context: Context, accensione: Boolean = false) {
         val adesso = LocalDateTime.now()
         val lista = carica(context)
+        val segno = segnoNonFuturo(context, adesso)
+        recupera(context, lista, adesso, accensione)
         val quanti = quota(lista, adesso)
-        lista.forEachIndexed { i, p ->
-            spegni(context, i)
-            accendi(context, i, p, adesso, quanti)
-        }
+        lista.forEachIndexed { i, p -> if (Avvisi.puoAvereSveglie(p, segno)) accendi(context, i, p, adesso, quanti) }
         segnaFinoA(context, adesso)
     }
 
-    /**
-     * Right after the phone is switched on, BEFORE the alarms are queued again: the alerts that fell
-     * while it was off. One per reminder (the most recent). Empty if we don't know since when.
-     */
-    fun persiASpento(context: Context, adesso: LocalDateTime): List<Pair<Promemoria, Avviso>> {
-        val finoA = preferenze(context).getLong(CHIAVE_FINO_A, 0L)
-        if (finoA == 0L) return emptyList()
-        val da = Instant.ofEpochMilli(finoA).atZone(ZoneId.systemDefault()).toLocalDateTime()
-        return carica(context).mapNotNull { p -> Avvisi.perso(p, da, adesso)?.let { p to it } }
-    }
+    /** The bookmark, but never later than now (the clock may have been put back): the earlier of the two. */
+    private fun segnoNonFuturo(context: Context, adesso: LocalDateTime): LocalDateTime =
+        segno(context)?.takeIf { it.isBefore(adesso) } ?: adesso
 
     /**
-     * The notifications of reminders that were deleted, or changed in title, date, time, repetition
-     * or on/off, go away: they would say things that are no longer true ("In 30 minutes, at 16:00"
-     * for a reminder just moved to 18:00).
+     * The notifications of reminders that were deleted, or changed in title, note, date, time,
+     * repetition or on/off, go away: they would say things that are no longer true ("In 30 minutes,
+     * at 16:00" for a reminder just moved to 18:00).
      */
     private fun togliNotificheVecchie(context: Context, prima: List<Promemoria>, dopo: List<Promemoria>) {
-        fun chiave(p: Promemoria) = listOf(p.titolo, p.partenza, p.ripetizione, p.fino, p.attivo)
+        fun chiave(p: Promemoria) = listOf(p.titolo, p.nota, p.partenza, p.senzaOrario, p.ripetizione, p.fino, p.attivo)
         val restano = dopo.map(::chiave).toSet()
         val notifiche = NotificationManagerCompat.from(context)
         prima.filter { chiave(it) !in restano }.forEach { notifiche.cancel(idNotifica(it)) }
@@ -161,13 +215,13 @@ object PromemoriaManager {
 
         val previsto = Instant.ofEpochMilli(previstoMillis)
             .atZone(ZoneId.systemDefault()).toLocalDateTime()
-        spegni(context, indice)
         accendi(context, indice, lista[indice], previsto, quota(lista, LocalDateTime.now()))
         segnaFinoA(context, previsto, soloAvanti = true)
     }
 
-    private fun spegni(context: Context, indice: Int) {
-        for (posto in 0 until ID_PER_PROMEMORIA) AlarmScheduler.cancella(context, idBase(indice) + posto)
+    /** Of the 10 ids a reminder owns, only the first few are ever used (Avvisi.DA_PROGRAMMARE). */
+    private fun spegni(context: Context, indice: Int, daPosto: Int = 0) {
+        for (posto in daPosto until Avvisi.DA_PROGRAMMARE) AlarmScheduler.cancella(context, idBase(indice) + posto)
     }
 
     /**
@@ -182,16 +236,22 @@ object PromemoriaManager {
     private fun quota(lista: List<Promemoria>, adesso: LocalDateTime) =
         Avvisi.quantiPerOgnuno(lista.count { it.attivo && it.prossimaVolta(adesso) != null })
 
+    /**
+     * Queues the next alerts of one reminder. An alarm set again with the same id REPLACES the one
+     * that was there, so nothing is cancelled first: only the places left over are cleared.
+     */
     private fun accendi(context: Context, indice: Int, p: Promemoria, dopo: LocalDateTime, quanti: Int) {
-        if (!p.attivo) return
-        Avvisi.prossimi(p, dopo, quanti).forEachIndexed { posto, avviso ->
+        val avvisi = if (p.attivo) Avvisi.prossimi(p, dopo, quanti) else emptyList()
+        spegni(context, indice, daPosto = avvisi.size)
+        avvisi.forEachIndexed { posto, avviso ->
             AlarmScheduler.programmaA(
                 context,
                 avviso.quando.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(),
                 id = idBase(indice) + posto,
                 notifica = idNotifica(p),
                 titolo = p.titolo,
-                testo = avviso.testo
+                testo = avviso.testo,
+                nota = p.nota
             )
         }
     }

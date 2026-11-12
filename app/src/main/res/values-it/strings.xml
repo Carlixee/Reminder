@@ -42,6 +42,7 @@
     <string name="ho_capito">Ho capito</string>
     <string name="apri_impostazioni">Apri impostazioni</string>
     <string name="permesso_negato">Senza questo permesso non vedrai nessuna notifica!</string>
+    <string name="non_mostrare_piu">Non mostrare più</string>
     <string name="canale_nome">Promemoria</string>
     <string name="canale_descrizione">Avvisi dei promemoria</string>
 
@@ -90,6 +91,11 @@
     <string name="etichetta_titolo">TITOLO</string>
     <string name="personale_suggerimento">Es. Parrucchiere, visita, palestra…</string>
     <string name="personale_serve_nome">Serve un titolo</string>
+    <string name="nota_suggerimento">Nota (facoltativa)</string>
+    <string name="senza_orario">Senza orario</string>
+    <string name="senza_orario_spiega">Vale per tutto il giorno</string>
+    <string name="etichetta_avviso_alle">AVVISO ALLE</string>
+    <string name="avviso_oggi_passato">L\'avviso di oggi (%1$s) è già passato: oggi non suona.</string>
     <string name="etichetta_quando">QUANDO</string>
     <string name="etichetta_a_partire_da">A PARTIRE DA</string>
     <string name="etichetta_ora">ORA</string>
@@ -133,6 +139,8 @@
     <string name="avvisi_accesi">Avvisi accesi</string>
     <string name="avvisi_accesi_spiega">Spento: resta in lista, ma non suona</string>
     <string name="salvato_passato">È già passato: lo trovi tra i passati</string>
+    <string name="salvataggio_fallito">Impossibile salvare: la memoria del telefono è piena</string>
+    <string name="impostazioni_non_apribili">Impossibile aprire le impostazioni del dispositivo</string>
 
     <!-- Favorites and the custom choice, in the sheet -->
     <string name="avviso_anteprima">La prossima volta: %s</string>
@@ -161,5 +169,9 @@
     <string name="fine_per_sempre">Per sempre</string>
     <string name="fine_fino_al">Fino al…</string>
     <string name="fine_titolo">Fino al giorno</string>
+    <string name="pausa_no">Nessuna pausa</string>
+    <string name="pausa_salta">Salta la prossima</string>
+    <string name="pausa_fino">Pausa fino al…</string>
+    <string name="pausa_titolo">In pausa fino al giorno</string>
     <string name="elimina_ripetuto">Si ripete: sparisce per sempre, con tutte le sue volte.</string>
 </resources>

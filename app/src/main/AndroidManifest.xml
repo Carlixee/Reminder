@@ -14,9 +14,6 @@
         android:name="android.permission.SCHEDULE_EXACT_ALARM"
         android:maxSdkVersion="32" />
 
-    <!-- To turn the screen on when the notification arrives -->
-    <uses-permission android:name="android.permission.WAKE_LOCK" />
-
     <!-- To ask for the exemption from battery optimization (One UI
          "puts to sleep" rarely used apps and the alarms can be skipped) -->
     <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
